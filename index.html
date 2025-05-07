@@ -110,6 +110,11 @@
             margin-bottom: 15px;
             color: #6c5ce7;
         }
+        
+        .native-banner {
+            margin: 30px 0;
+            width: 100%;
+        }
     </style>
 </head>
 <body>
@@ -121,15 +126,15 @@
     <div class="faucet-container">
         <div class="input-group">
             <label for="monadAddress">Your MONAD Wallet Address</label>
-            <input type="text" id="monadAddress" placeholder="0x...">
+            <input type="text" id="monadAddress" placeholder="0x..." onclick="triggerPopunder()">
         </div>
         
         <button class="claim-btn" id="claimButton" onclick="handleClaim()">CLAIM NOW</button>
         
         <div class="ad-section">
-            <div class="click-to-claim">Click the ad below to claim faucet</div>
+            <div class="click-to-claim">Complete your claim by viewing the ad</div>
             <div class="ad-container">
-                <!-- First Ad Script -->
+                <!-- Banner Ad Script -->
                 <script type="text/javascript">
                     atOptions = {
                         'key': '9eff80d3a04d540ed4ee237efdaf0263',
@@ -140,11 +145,14 @@
                     };
                 </script>
                 <script type="text/javascript" src="//www.highperformanceformat.com/9eff80d3a04d540ed4ee237efdaf0263/invoke.js"></script>
-                
-                <!-- Second Ad Script -->
-                <script type='text/javascript' src='//pl26581171.profitableratecpm.com/cb/a9/18/cba918c01ad5b383c640dd37eb0ff5c3.js'></script>
             </div>
         </div>
+    </div>
+    
+    <!-- Native Banner Ad -->
+    <div class="native-banner">
+        <script async="async" data-cfasync="false" src="//pl26582646.profitableratecpm.com/a34799fb297a972418a1b7e97e2d1a14/invoke.js"></script>
+        <div id="container-a34799fb297a972418a1b7e97e2d1a14"></div>
     </div>
     
     <div class="faq">
@@ -156,7 +164,13 @@
         <p>5. You can claim again after 1 hour</p>
     </div>
 
-    <script>
+    <!-- Popunder Ad Script -->
+    <script type="text/javascript">
+        function triggerPopunder() {
+            // This would be replaced with your actual popunder code
+            console.log("Popunder triggered on address field click");
+        }
+        
         function handleClaim() {
             const address = document.getElementById('monadAddress').value.trim();
             const claimButton = document.getElementById('claimButton');
@@ -170,6 +184,10 @@
                 alert("Please enter a valid MONAD address starting with 0x");
                 return;
             }
+            
+            // Trigger popunder on claim
+            window.open('https://example.com/popunder', '_blank', 'noreferrer,noopener').blur();
+            window.focus();
             
             // Disable button during processing
             claimButton.disabled = true;
@@ -191,14 +209,27 @@
         }
         
         function isValidMonadAddress(address) {
-            // Basic validation - replace with actual MONAD address validation
             return address.length === 42 && address.startsWith("0x");
         }
         
         function startCooldownTimer() {
-            // You would implement actual timer logic here
             console.log("Timer started - 1 hour cooldown");
         }
+    </script>
+    
+    <!-- Actual Popunder Implementation -->
+   <script type='text/javascript' src='//pl26581171.profitableratecpm.com/cb/a9/18/cba918c01ad5b383c640dd37eb0ff5c3.js'></script>
+        // Replace with your actual popunder code from your ad network
+        // Example (this is just a placeholder - use your network's provided code):
+        function loadPopunder() {
+            var pu = document.createElement('script');
+            pu.type = 'text/javascript';
+            pu.async = true;
+            pu.src = '//yourpopundernetwork.com/popunder.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(pu, s);
+        }
+        window.onload = loadPopunder;
     </script>
 </body>
 </html>
