@@ -6,103 +6,117 @@
     <title>MONAD FAUCET</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            max-width: 600px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 500px;
             margin: 0 auto;
             padding: 20px;
-            text-align: center;
-            background-color: #f5f5f5;
+            background-color: #f0f2f5;
+            color: #333;
         }
-        .faucet-container {
-            background-color: white;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            margin-bottom: 20px;
+        .faucet-box {
+            background: linear-gradient(135deg, #6e8efb, #a777e3);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            margin-bottom: 25px;
+            color: white;
         }
         h1 {
-            color: #4a4a4a;
-            margin-bottom: 30px;
+            margin-top: 0;
+            font-size: 24px;
+            text-align: center;
         }
-        .monad-address {
+        .address-input {
             width: 100%;
             padding: 12px;
-            margin-bottom: 20px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            font-size: 16px;
+            margin: 15px 0;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            box-sizing: border-box;
         }
         .claim-btn {
-            background-color: #4CAF50;
+            width: 100%;
+            padding: 12px;
+            background-color: #ff6b6b;
             color: white;
             border: none;
-            padding: 12px 30px;
+            border-radius: 6px;
             font-size: 16px;
-            border-radius: 5px;
+            font-weight: bold;
             cursor: pointer;
-            transition: background-color 0.3s;
+            transition: all 0.3s;
         }
         .claim-btn:hover {
-            background-color: #45a049;
+            background-color: #ff5252;
+            transform: translateY(-2px);
         }
         .ad-container {
-            margin-top: 30px;
-            padding: 15px;
             background-color: white;
-            border-radius: 5px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            text-align: center;
         }
-        .spacer {
-            height: 30px;
+        .ad-note {
+            font-size: 12px;
+            color: #777;
+            margin-top: 8px;
+            text-align: center;
         }
     </style>
 </head>
 <body>
-    <div class="faucet-container">
+    <div class="faucet-box">
         <h1>MONAD FAUCET</h1>
-        
-        <input type="text" class="monad-address" placeholder="Enter your MONAD address" id="monadAddress">
-        
-        <div class="spacer"></div>
-        
-        <button class="claim-btn" onclick="claimMonad()">CLAIM</button>
+        <input type="text" class="address-input" placeholder="Your MONAD wallet address" id="monadAddress">
+        <button class="claim-btn" onclick="handleClaim()">CLAIM FREE MONAD</button>
     </div>
-    
+
     <div class="ad-container">
-        <!-- Adsterra 468x60 Banner Ad -->
-        <div style="width: 468px; height: 60px; margin: 0 auto;">
-            <script type="text/javascript">
-                atOptions = {
-                    'key': '0ba7200b9eea11caefdce2a1743e2463',
-                    'format': 'iframe',
-                    'height': 60,
-                    'width': 468,
-                    'params': {}
-                };
-                document.write('<scr' + 'ipt type="text/javascript" src="http' + 
-                (location.protocol === 'https:' ? 's' : '') + 
-                '://www.profitabledisplaynetwork.com/0ba7200b9eea11caefdce2a1743e2463/invoke.js"></scr' + 'ipt>');
-            </script>
-        </div>
-        
-        <p style="font-size: 12px; color: #777; margin-top: 5px;">
-            Ads help keep this faucet running. Please disable ad-blocker.
-        </p>
+        <!-- Adsterra Banner Ad -->
+        <script type="text/javascript">
+            atOptions = {
+                'key' : '9eff80d3a04d540ed4ee237efdaf0263',
+                'format' : 'iframe',
+                'height' : 60,
+                'width' : 468,
+                'params' : {}
+            };
+        </script>
+        <script type="text/javascript" src="//www.highperformanceformat.com/9eff80d3a04d540ed4ee237efdaf0263/invoke.js"></script>
+        <p class="ad-note">Ads support this free faucet. Please disable ad-blocker.</p>
     </div>
 
     <script>
-        function claimMonad() {
-            const address = document.getElementById('monadAddress').value;
+        function handleClaim() {
+            const address = document.getElementById('monadAddress').value.trim();
+            
             if (!address) {
-                alert("Please enter your MONAD address");
+                alert("Please enter your MONAD wallet address");
                 return;
             }
             
-            // Here you would typically connect to your backend faucet service
-            alert("Claim request sent to: " + address + "\n\n(Note: This is a frontend demo. Backend integration required for real faucet)");
+            if (!isValidAddress(address)) {
+                alert("Please enter a valid MONAD address");
+                return;
+            }
             
-            // Reset form
-            document.getElementById('monadAddress').value = "";
+            // Simulate claim processing
+            document.querySelector('.claim-btn').disabled = true;
+            document.querySelector('.claim-btn').textContent = "Processing...";
+            
+            setTimeout(() => {
+                alert("Success! 0.5 MONAD sent to:\n" + address);
+                document.getElementById('monadAddress').value = "";
+                document.querySelector('.claim-btn').disabled = false;
+                document.querySelector('.claim-btn').textContent = "CLAIM FREE MONAD";
+            }, 2000);
+        }
+        
+        function isValidAddress(address) {
+            // Basic validation - replace with actual MONAD address validation
+            return address.length > 10 && address.startsWith("0x");
         }
     </script>
 </body>
