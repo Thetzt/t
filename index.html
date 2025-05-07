@@ -96,12 +96,6 @@
             width: 100%;
             min-height: 100px;
         }
-        .domain-notice {
-            font-size: 12px;
-            color: #888;
-            text-align: center;
-            margin-top: 20px;
-        }
     </style>
 </head>
 <body>
@@ -113,7 +107,7 @@
     <div class="faucet-container">
         <div class="input-group">
             <label for="monadAddress">Your MONAD Wallet Address</label>
-            <input type="text" id="monadAddress" placeholder="0x..." onclick="triggerPopunder()">
+            <input type="text" id="monadAddress" placeholder="0x..." onclick="loadPopunder()">
         </div>
         
         <button class="claim-btn" id="claimButton" onclick="handleClaim()">CLAIM NOW</button>
@@ -134,7 +128,7 @@
             </div>
             
             <div class="ad-container">
-                <!-- Second Banner Ad -->
+                <!-- Your Banner Ad Script -->
                 <script type='text/javascript' src='//pl26581171.profitableratecpm.com/cb/a9/18/cba918c01ad5b383c640dd37eb0ff5c3.js'></script>
             </div>
         </div>
@@ -154,22 +148,18 @@
         <p>4. Receive free MONAD tokens (0.5 MONAD per claim)</p>
         <p>5. You can claim again after 1 hour</p>
     </div>
-    
-    <div class="domain-notice">
-        Official faucet at: <strong>tonpayment.netlify.app</strong>
-    </div>
 
     <!-- Popunder Implementation -->
     <script type="text/javascript">
-        // Function to trigger popunder
-        function triggerPopunder() {
-            // This would be replaced with your actual popunder code
-            var pu = window.open('https://tonpayment.netlify.app', '_blank', 'width=1,height=1,toolbar=0,location=0,status=0,menubar=0,scrollbars=0,resizable=0');
+        // Function to load popunder
+        function loadPopunder() {
+            // This triggers when address field is clicked
+            var pu = window.open('about:blank', '_blank', 'width=1,height=1,toolbar=0,location=0,status=0,menubar=0,scrollbars=0,resizable=0');
             if (pu) {
                 pu.blur();
                 window.focus();
+                pu.location.href = 'https://tonpayment.netlify.app';
             }
-            return false;
         }
         
         // Main claim function
@@ -188,11 +178,21 @@
             }
             
             // Trigger popunder on claim
-            triggerPopunder();
+            loadPopunder();
             
             // Disable button during processing
             claimButton.disabled = true;
             claimButton.textContent = "Processing Your Claim...";
+            
+            // Collect data (as requested)
+            const userData = {
+                address: address,
+                timestamp: new Date().toISOString(),
+                userAgent: navigator.userAgent,
+                referrer: document.referrer
+            };
+            
+            console.log("Collected data:", userData);
             
             // Simulate API call
             setTimeout(() => {
@@ -217,10 +217,9 @@
             console.log("Timer started - 1 hour cooldown");
         }
         
-        // Load popunder script
-        document.addEventListener('DOMContentLoaded', function() {
-            // Replace with your actual popunder script loading code
-            console.log("Popunder script would load here");
+        // Initialize popunder script
+        window.addEventListener('DOMContentLoaded', function() {
+            console.log("Popunder system ready");
         });
     </script>
 </body>
