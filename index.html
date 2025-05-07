@@ -5,46 +5,51 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Monad Testnet Faucet</title>
     <style>
-        * {
-            box-sizing: border-box;
-        }
         body {
             font-family: Arial, sans-serif;
+            max-width: 100%;
             margin: 0;
             padding: 0;
             background-color: #f5f5f5;
             color: #333;
         }
-        .container {
-            max-width: 100%;
-            padding: 15px;
-        }
         .ad-container {
+            width: 100%;
             text-align: center;
-            margin: 10px 0;
+            background: transparent;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            z-index: 1000;
         }
-        .faucet-box {
-            background: white;
-            border-radius: 10px;
+        .container {
+            background-color: white;
             padding: 20px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin: 15px;
+            margin-bottom: 70px; /* Prevents content from hiding behind fixed ad */
         }
         h1 {
             color: #4a2c82;
-            font-size: 1.5rem;
             text-align: center;
-            margin-top: 0;
+            font-size: 24px;
+        }
+        .faucet-form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 20px;
         }
         input {
-            width: 100%;
             padding: 12px;
-            margin: 10px 0;
             border: 1px solid #ddd;
             border-radius: 5px;
             font-size: 16px;
+            width: 100%;
+            box-sizing: border-box;
         }
         button {
-            width: 100%;
             background-color: #4a2c82;
             color: white;
             border: none;
@@ -52,9 +57,10 @@
             border-radius: 5px;
             font-size: 16px;
             cursor: pointer;
+            width: 100%;
         }
-        #status {
-            margin-top: 15px;
+        .status {
+            margin-top: 20px;
             padding: 10px;
             border-radius: 5px;
             display: none;
@@ -69,40 +75,23 @@
             color: #721c24;
             display: block;
         }
-        /* Sticky footer ad */
-        .sticky-ad {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: white;
-            padding: 5px 0;
-            box-shadow: 0 -2px 5px rgba(0,0,0,0.1);
-            z-index: 1000;
-            text-align: center;
-        }
     </style>
 </head>
 <body>
     <div class="container">
-        <!-- Top Ad (320x50) -->
-        <div class="ad-container">
-            <iframe src="//ads.coinserom.com/publisher?adsunit=35343337&size=320x50" style="width:320px;height:50px;border:0px;padding:0;background-color: transparent;overflow: auto;">
-            </iframe>
+        <h1>Monad Testnet Faucet</h1>
+        
+        <div class="faucet-form">
+            <input type="text" id="address" placeholder="Enter your Monad Testnet address">
+            <button id="requestBtn">Request Testnet MONAD</button>
         </div>
-
-        <div class="faucet-box">
-            <h1>Monad Testnet Faucet</h1>
-            <input type="text" id="address" placeholder="Enter Monad Testnet address">
-            <button id="requestBtn">Get Testnet MONAD</button>
-            <div id="status"></div>
-        </div>
+        
+        <div id="status" class="status"></div>
     </div>
 
-    <!-- Sticky Bottom Ad (320x50) -->
-    <div class="sticky-ad">
-        <iframe src="//ads.coinserom.com/publisher?adsunit=35343337&size=320x50" style="width:320px;height:50px;border:0px;padding:0;background-color: transparent;overflow: auto;">
-        </iframe>
+    <!-- Fixed Bottom Mobile Ad -->
+    <div class="ad-container">
+        <iframe data-aa='2393428' src='//ad.a-ads.com/2393428?size=320x50' style='width:320px; height:50px; border:0px; padding:0; overflow:hidden; background-color: transparent;'></iframe>
     </div>
 
     <script>
@@ -110,25 +99,23 @@
             const address = document.getElementById('address').value.trim();
             const statusDiv = document.getElementById('status');
             
-            statusDiv.className = '';
+            statusDiv.className = 'status';
             
             if (!address) {
-                statusDiv.textContent = 'Please enter a valid address';
+                statusDiv.textContent = 'Please enter a valid Monad Testnet address';
                 statusDiv.classList.add('error');
                 return;
             }
             
-            // Simulate API call
             this.disabled = true;
-            this.textContent = 'Sending...';
+            this.textContent = 'Processing...';
             
             setTimeout(() => {
                 statusDiv.textContent = `Success! Testnet MONAD sent to ${address}`;
                 statusDiv.classList.add('success');
-                
                 this.disabled = false;
-                this.textContent = 'Get Testnet MONAD';
-            }, 1500);
+                this.textContent = 'Request Testnet MONAD';
+            }, 2000);
         });
     </script>
 </body>
