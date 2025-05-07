@@ -3,201 +3,73 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MONAD Crypto Faucet</title>
+    <title>MONAD FAUCET</title>
     <style>
         body {
-            font-family: 'Arial', sans-serif;
-            max-width: 500px;
+            font-family: Arial, sans-serif;
+            max-width: 600px;
             margin: 0 auto;
             padding: 20px;
-            background-color: #f8f9fa;
-            color: #333;
-            line-height: 1.6;
-        }
-        .header {
             text-align: center;
-            margin-bottom: 25px;
+            background-color: #f5f5f5;
         }
-        .logo {
-            font-size: 28px;
-            font-weight: bold;
-            color: #6c5ce7;
-            margin-bottom: 5px;
-        }
-        .tagline {
-            color: #666;
-            font-size: 14px;
-        }
-        .faucet-container {
+        .container {
             background-color: white;
-            padding: 25px;
+            padding: 30px;
             border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            margin-bottom: 20px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
         }
-        .input-group {
-            margin-bottom: 20px;
-        }
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: bold;
-            color: #555;
+        h1 {
+            color: #333;
         }
         input[type="text"] {
-            width: 100%;
+            width: 80%;
             padding: 12px;
+            margin: 20px 0;
             border: 1px solid #ddd;
             border-radius: 5px;
             font-size: 16px;
-            box-sizing: border-box;
-            cursor: pointer;
         }
-        .claim-btn {
-            width: 100%;
-            padding: 14px;
-            background-color: #6c5ce7;
+        button {
+            background-color: #4CAF50;
             color: white;
             border: none;
-            border-radius: 5px;
+            padding: 12px 24px;
             font-size: 16px;
-            font-weight: bold;
+            border-radius: 5px;
             cursor: pointer;
             transition: background-color 0.3s;
         }
-        .claim-btn:hover {
-            background-color: #5649c0;
-        }
-        .claim-btn:disabled {
-            background-color: #ccc;
-            cursor: not-allowed;
-        }
-        .ad-section {
-            background-color: #f1f3f5;
-            padding: 20px;
-            border-radius: 10px;
-            text-align: center;
-            margin-top: 30px;
-        }
-        .ad-container {
-            min-height: 60px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 15px 0;
-        }
-        .faq {
-            margin-top: 30px;
-            font-size: 14px;
-            color: #666;
-        }
-        .native-banner {
-            margin: 30px 0;
-            width: 100%;
-            min-height: 100px;
+        button:hover {
+            background-color: #45a049;
         }
     </style>
 </head>
 <body>
-    <div class="header">
-        <div class="logo">MONAD FAUCET</div>
-        <div class="tagline">Get free MONAD tokens every hour</div>
-    </div>
-    
-    <div class="faucet-container">
-        <div class="input-group">
-            <label for="monadAddress">Your MONAD Wallet Address</label>
-            <input type="text" id="monadAddress" placeholder="0x..." onclick="triggerPopunder()">
-        </div>
+    <div class="container">
+        <h1>MONAD FAUCET</h1>
+        <p>Enter your MON address to claim free tokens</p>
         
-        <button class="claim-btn" id="claimButton" onclick="handleClaim()">CLAIM NOW</button>
-        
-        <div class="ad-section">
-            <div class="ad-container">
-                <!-- Your Banner Ad Script -->
-                <script type='text/javascript' src='//pl26581171.profitableratecpm.com/cb/a9/18/cba918c01ad5b383c640dd37eb0ff5c3.js'></script>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Native Banner Ad -->
-    <div class="native-banner">
-        <script async="async" data-cfasync="false" src="//pl26582646.profitableratecpm.com/a34799fb297a972418a1b7e97e2d1a14/invoke.js"></script>
-        <div id="container-a34799fb297a972418a1b7e97e2d1a14"></div>
-    </div>
-    
-    <div class="faq">
-        <h3>How it works:</h3>
-        <p>1. Enter your MONAD wallet address</p>
-        <p>2. Click "CLAIM NOW"</p>
-        <p>3. Complete the verification</p>
-        <p>4. Receive free MONAD tokens (0.5 MONAD per claim)</p>
-        <p>5. You can claim again after 1 hour</p>
+        <form id="faucetForm">
+            <input type="text" id="monAddress" placeholder="Enter your MON address here" required>
+            <br>
+            <button type="submit" id="claimButton">Claim</button>
+        </form>
     </div>
 
-    <!-- Popunder Implementation -->
-    <script type="text/javascript">
-        // Function to trigger popunder
-        function triggerPopunder() {
-            // Replace this with your actual popunder code
-            var popunder = window.open('about:blank', '_blank', 'width=1,height=1,toolbar=0,location=0,status=0,menubar=0,scrollbars=0,resizable=0');
-            if (popunder) {
-                popunder.blur();
-                window.focus();
-                popunder.location.href = 'https://example.com/popunder'; // Replace with your URL
-            }
-            return false;
-        }
-        
-        // Main claim function
-        function handleClaim() {
-            const address = document.getElementById('monadAddress').value.trim();
-            const claimButton = document.getElementById('claimButton');
-            
-            if (!address) {
-                alert("Please enter your MONAD wallet address");
+    <!-- Ad Script -->
+    <script type='text/javascript' src='//pl26581171.profitableratecpm.com/cb/a9/18/cba918c01ad5b383c640dd37eb0ff5c3.js'></script>
+
+    <script>
+        document.getElementById('faucetForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const address = document.getElementById('monAddress').value;
+            if (address.trim() === '') {
+                alert('Please enter your MON address');
                 return;
             }
-            
-            if (!isValidMonadAddress(address)) {
-                alert("Please enter a valid MONAD address starting with 0x");
-                return;
-            }
-            
-            // Trigger popunder on claim
-            triggerPopunder();
-            
-            // Disable button during processing
-            claimButton.disabled = true;
-            claimButton.textContent = "Processing Your Claim...";
-            
-            // Simulate API call
-            setTimeout(() => {
-                alert("Success! 0.5 MONAD has been sent to:\n" + address);
-                
-                // Reset form
-                document.getElementById('monadAddress').value = "";
-                claimButton.disabled = false;
-                claimButton.textContent = "CLAIM NOW";
-                
-                // Start cooldown timer
-                startCooldownTimer();
-                
-            }, 2000);
-        }
-        
-        function isValidMonadAddress(address) {
-            return address.length === 42 && address.startsWith("0x");
-        }
-        
-        function startCooldownTimer() {
-            console.log("Timer started - 1 hour cooldown");
-        }
-        
-        // Load popunder script
-        document.addEventListener('DOMContentLoaded', function() {
-            // Replace with your actual popunder script loading code
-            console.log("Popunder script would load here");
+            alert('Claim request submitted for address: ' + address);
+            // Here you would typically send the address to your backend
         });
     </script>
 </body>
