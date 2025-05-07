@@ -3,202 +3,133 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MONAD Crypto Faucet</title>
+    <title>Monad Testnet Faucet</title>
     <style>
+        * {
+            box-sizing: border-box;
+        }
         body {
-            font-family: 'Arial', sans-serif;
-            max-width: 500px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: #f8f9fa;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
             color: #333;
-            line-height: 1.6;
         }
-        
-        .header {
+        .container {
+            max-width: 100%;
+            padding: 15px;
+        }
+        .ad-container {
             text-align: center;
-            margin-bottom: 25px;
+            margin: 10px 0;
         }
-        
-        .logo {
-            font-size: 28px;
-            font-weight: bold;
-            color: #6c5ce7;
-            margin-bottom: 5px;
-        }
-        
-        .tagline {
-            color: #666;
-            font-size: 14px;
-        }
-        
-        .faucet-container {
-            background-color: white;
-            padding: 25px;
+        .faucet-box {
+            background: white;
             border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            margin-bottom: 20px;
+            padding: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
-        
-        .input-group {
-            margin-bottom: 20px;
+        h1 {
+            color: #4a2c82;
+            font-size: 1.5rem;
+            text-align: center;
+            margin-top: 0;
         }
-        
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: bold;
-            color: #555;
-        }
-        
-        input[type="text"] {
+        input {
             width: 100%;
             padding: 12px;
+            margin: 10px 0;
             border: 1px solid #ddd;
             border-radius: 5px;
             font-size: 16px;
-            box-sizing: border-box;
         }
-        
-        .claim-btn {
+        button {
             width: 100%;
-            padding: 14px;
-            background-color: #6c5ce7;
+            background-color: #4a2c82;
             color: white;
             border: none;
+            padding: 12px;
             border-radius: 5px;
             font-size: 16px;
-            font-weight: bold;
             cursor: pointer;
-            transition: background-color 0.3s;
         }
-        
-        .claim-btn:hover {
-            background-color: #5649c0;
+        #status {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 5px;
+            display: none;
         }
-        
-        .claim-btn:disabled {
-            background-color: #ccc;
-            cursor: not-allowed;
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            display: block;
         }
-        
-        .ad-section {
-            background-color: #f1f3f5;
-            padding: 20px;
-            border-radius: 10px;
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            display: block;
+        }
+        /* Sticky footer ad */
+        .sticky-ad {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            padding: 5px 0;
+            box-shadow: 0 -2px 5px rgba(0,0,0,0.1);
+            z-index: 1000;
             text-align: center;
-            margin-top: 30px;
-        }
-        
-        .ad-container {
-            min-height: 60px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 15px 0;
-        }
-        
-        .faq {
-            margin-top: 30px;
-            font-size: 14px;
-            color: #666;
-        }
-        
-        .click-to-claim {
-            font-size: 16px;
-            font-weight: bold;
-            margin-bottom: 15px;
-            color: #6c5ce7;
         }
     </style>
 </head>
 <body>
-    <div class="header">
-        <div class="logo">MONAD FAUCET</div>
-        <div class="tagline">Get free MONAD tokens every hour</div>
-    </div>
-    
-    <div class="faucet-container">
-        <div class="input-group">
-            <label for="monadAddress">Your MONAD Wallet Address</label>
-            <input type="text" id="monadAddress" placeholder="0x...">
+    <div class="container">
+        <!-- Top Ad (320x50) -->
+        <div class="ad-container">
+            <iframe src="//ads.coinserom.com/publisher?adsunit=35343337&size=320x50" style="width:320px;height:50px;border:0px;padding:0;background-color: transparent;overflow: auto;">
+            </iframe>
         </div>
-        
-        <button class="claim-btn" id="claimButton" onclick="handleClaim()">CLAIM NOW</button>
-        
-        <div class="ad-section">
-            <div class="click-to-claim">Click the ad below to claim faucet</div>
-            <div class="ad-container">
-                <!-- First Ad Script -->
-                <script type="text/javascript">
-                    atOptions = {
-                        'key': '9eff80d3a04d540ed4ee237efdaf0263',
-                        'format': 'iframe',
-                        'height': 60,
-                        'width': 468,
-                        'params': {}
-                    };
-                </script>
-                <script type="text/javascript" src="//www.highperformanceformat.com/9eff80d3a04d540ed4ee237efdaf0263/invoke.js"></script>
-                
-                <!-- Second Ad Script -->
-                <script type='text/javascript' src='//pl26581171.profitableratecpm.com/cb/a9/18/cba918c01ad5b383c640dd37eb0ff5c3.js'></script>
-            </div>
+
+        <div class="faucet-box">
+            <h1>Monad Testnet Faucet</h1>
+            <input type="text" id="address" placeholder="Enter Monad Testnet address">
+            <button id="requestBtn">Get Testnet MONAD</button>
+            <div id="status"></div>
         </div>
     </div>
-    
-    <div class="faq">
-        <h3>How it works:</h3>
-        <p>1. Enter your MONAD wallet address</p>
-        <p>2. Click "CLAIM NOW"</p>
-        <p>3. View the ad to complete your claim</p>
-        <p>4. Receive free MONAD tokens (0.5 MONAD per claim)</p>
-        <p>5. You can claim again after 1 hour</p>
+
+    <!-- Sticky Bottom Ad (320x50) -->
+    <div class="sticky-ad">
+        <iframe src="//ads.coinserom.com/publisher?adsunit=35343337&size=320x50" style="width:320px;height:50px;border:0px;padding:0;background-color: transparent;overflow: auto;">
+        </iframe>
     </div>
 
     <script>
-        function handleClaim() {
-            const address = document.getElementById('monadAddress').value.trim();
-            const claimButton = document.getElementById('claimButton');
+        document.getElementById('requestBtn').addEventListener('click', function() {
+            const address = document.getElementById('address').value.trim();
+            const statusDiv = document.getElementById('status');
+            
+            statusDiv.className = '';
             
             if (!address) {
-                alert("Please enter your MONAD wallet address");
+                statusDiv.textContent = 'Please enter a valid address';
+                statusDiv.classList.add('error');
                 return;
             }
-            
-            if (!isValidMonadAddress(address)) {
-                alert("Please enter a valid MONAD address starting with 0x");
-                return;
-            }
-            
-            // Disable button during processing
-            claimButton.disabled = true;
-            claimButton.textContent = "Processing Your Claim...";
             
             // Simulate API call
+            this.disabled = true;
+            this.textContent = 'Sending...';
+            
             setTimeout(() => {
-                alert("Success! 0.5 MONAD has been sent to:\n" + address);
+                statusDiv.textContent = `Success! Testnet MONAD sent to ${address}`;
+                statusDiv.classList.add('success');
                 
-                // Reset form
-                document.getElementById('monadAddress').value = "";
-                claimButton.disabled = false;
-                claimButton.textContent = "CLAIM NOW";
-                
-                // Start cooldown timer
-                startCooldownTimer();
-                
-            }, 2000);
-        }
-        
-        function isValidMonadAddress(address) {
-            // Basic validation - replace with actual MONAD address validation
-            return address.length === 42 && address.startsWith("0x");
-        }
-        
-        function startCooldownTimer() {
-            // You would implement actual timer logic here
-            console.log("Timer started - 1 hour cooldown");
-        }
+                this.disabled = false;
+                this.textContent = 'Get Testnet MONAD';
+            }, 1500);
+        });
     </script>
 </body>
 </html>
