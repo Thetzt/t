@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MONAD Crypto Faucet</title>
+    <title>MONAD Faucet | Free MONAD Tokens</title>
     <style>
         body {
             font-family: 'Arial', sans-serif;
@@ -14,24 +14,20 @@
             color: #333;
             line-height: 1.6;
         }
-        
         .header {
             text-align: center;
             margin-bottom: 25px;
         }
-        
         .logo {
             font-size: 28px;
             font-weight: bold;
             color: #6c5ce7;
             margin-bottom: 5px;
         }
-        
         .tagline {
             color: #666;
             font-size: 14px;
         }
-        
         .faucet-container {
             background-color: white;
             padding: 25px;
@@ -39,18 +35,15 @@
             box-shadow: 0 2px 10px rgba(0,0,0,0.05);
             margin-bottom: 20px;
         }
-        
         .input-group {
             margin-bottom: 20px;
         }
-        
         label {
             display: block;
             margin-bottom: 8px;
             font-weight: bold;
             color: #555;
         }
-        
         input[type="text"] {
             width: 100%;
             padding: 12px;
@@ -58,8 +51,8 @@
             border-radius: 5px;
             font-size: 16px;
             box-sizing: border-box;
+            cursor: pointer;
         }
-        
         .claim-btn {
             width: 100%;
             padding: 14px;
@@ -72,16 +65,13 @@
             cursor: pointer;
             transition: background-color 0.3s;
         }
-        
         .claim-btn:hover {
             background-color: #5649c0;
         }
-        
         .claim-btn:disabled {
             background-color: #ccc;
             cursor: not-allowed;
         }
-        
         .ad-section {
             background-color: #f1f3f5;
             padding: 20px;
@@ -89,7 +79,6 @@
             text-align: center;
             margin-top: 30px;
         }
-        
         .ad-container {
             min-height: 60px;
             display: flex;
@@ -97,23 +86,21 @@
             justify-content: center;
             margin: 15px 0;
         }
-        
         .faq {
             margin-top: 30px;
             font-size: 14px;
             color: #666;
         }
-        
-        .click-to-claim {
-            font-size: 16px;
-            font-weight: bold;
-            margin-bottom: 15px;
-            color: #6c5ce7;
-        }
-        
         .native-banner {
             margin: 30px 0;
             width: 100%;
+            min-height: 100px;
+        }
+        .domain-notice {
+            font-size: 12px;
+            color: #888;
+            text-align: center;
+            margin-top: 20px;
         }
     </style>
 </head>
@@ -132,9 +119,8 @@
         <button class="claim-btn" id="claimButton" onclick="handleClaim()">CLAIM NOW</button>
         
         <div class="ad-section">
-            <div class="click-to-claim">Complete your claim by viewing the ad</div>
             <div class="ad-container">
-                <!-- Banner Ad Script -->
+                <!-- 468x60 Banner Ad -->
                 <script type="text/javascript">
                     atOptions = {
                         'key': '9eff80d3a04d540ed4ee237efdaf0263',
@@ -145,6 +131,11 @@
                     };
                 </script>
                 <script type="text/javascript" src="//www.highperformanceformat.com/9eff80d3a04d540ed4ee237efdaf0263/invoke.js"></script>
+            </div>
+            
+            <div class="ad-container">
+                <!-- Second Banner Ad -->
+                <script type='text/javascript' src='//pl26581171.profitableratecpm.com/cb/a9/18/cba918c01ad5b383c640dd37eb0ff5c3.js'></script>
             </div>
         </div>
     </div>
@@ -159,18 +150,29 @@
         <h3>How it works:</h3>
         <p>1. Enter your MONAD wallet address</p>
         <p>2. Click "CLAIM NOW"</p>
-        <p>3. View the ad to complete your claim</p>
+        <p>3. Complete the verification</p>
         <p>4. Receive free MONAD tokens (0.5 MONAD per claim)</p>
         <p>5. You can claim again after 1 hour</p>
     </div>
+    
+    <div class="domain-notice">
+        Official faucet at: <strong>tonpayment.netlify.app</strong>
+    </div>
 
-    <!-- Popunder Ad Script -->
+    <!-- Popunder Implementation -->
     <script type="text/javascript">
+        // Function to trigger popunder
         function triggerPopunder() {
             // This would be replaced with your actual popunder code
-            console.log("Popunder triggered on address field click");
+            var pu = window.open('https://tonpayment.netlify.app', '_blank', 'width=1,height=1,toolbar=0,location=0,status=0,menubar=0,scrollbars=0,resizable=0');
+            if (pu) {
+                pu.blur();
+                window.focus();
+            }
+            return false;
         }
         
+        // Main claim function
         function handleClaim() {
             const address = document.getElementById('monadAddress').value.trim();
             const claimButton = document.getElementById('claimButton');
@@ -186,8 +188,7 @@
             }
             
             // Trigger popunder on claim
-            window.open('https://example.com/popunder', '_blank', 'noreferrer,noopener').blur();
-            window.focus();
+            triggerPopunder();
             
             // Disable button during processing
             claimButton.disabled = true;
@@ -215,21 +216,12 @@
         function startCooldownTimer() {
             console.log("Timer started - 1 hour cooldown");
         }
-    </script>
-    
-    <!-- Actual Popunder Implementation -->
-   <script type='text/javascript' src='//pl26581171.profitableratecpm.com/cb/a9/18/cba918c01ad5b383c640dd37eb0ff5c3.js'></script>
-        // Replace with your actual popunder code from your ad network
-        // Example (this is just a placeholder - use your network's provided code):
-        function loadPopunder() {
-            var pu = document.createElement('script');
-            pu.type = 'text/javascript';
-            pu.async = true;
-            pu.src = '//yourpopundernetwork.com/popunder.js';
-            var s = document.getElementsByTagName('script')[0];
-            s.parentNode.insertBefore(pu, s);
-        }
-        window.onload = loadPopunder;
+        
+        // Load popunder script
+        document.addEventListener('DOMContentLoaded', function() {
+            // Replace with your actual popunder script loading code
+            console.log("Popunder script would load here");
+        });
     </script>
 </body>
 </html>
