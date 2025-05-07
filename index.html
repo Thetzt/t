@@ -90,15 +90,6 @@
             margin-top: 30px;
         }
         
-        .ad-notice {
-            font-size: 13px;
-            color: #666;
-            margin-top: 10px;
-            padding: 10px;
-            background-color: #e9ecef;
-            border-radius: 5px;
-        }
-        
         .ad-container {
             min-height: 60px;
             display: flex;
@@ -111,6 +102,13 @@
             margin-top: 30px;
             font-size: 14px;
             color: #666;
+        }
+        
+        .click-to-claim {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #6c5ce7;
         }
     </style>
 </head>
@@ -129,9 +127,9 @@
         <button class="claim-btn" id="claimButton" onclick="handleClaim()">CLAIM NOW</button>
         
         <div class="ad-section">
-            <h3>Support This Faucet</h3>
+            <div class="click-to-claim">Click the ad below to claim faucet</div>
             <div class="ad-container">
-                <!-- Adsterra Ad Code -->
+                <!-- First Ad Script -->
                 <script type="text/javascript">
                     atOptions = {
                         'key': '9eff80d3a04d540ed4ee237efdaf0263',
@@ -142,9 +140,9 @@
                     };
                 </script>
                 <script type="text/javascript" src="//www.highperformanceformat.com/9eff80d3a04d540ed4ee237efdaf0263/invoke.js"></script>
-            </div>
-            <div class="ad-notice">
-                <strong>Ads support this free faucet.</strong> Please consider disabling your ad-blocker to help us continue providing free MONAD tokens.
+                
+                <!-- Second Ad Script -->
+                <script type='text/javascript' src='//pl26581171.profitableratecpm.com/cb/a9/18/cba918c01ad5b383c640dd37eb0ff5c3.js'></script>
             </div>
         </div>
     </div>
@@ -153,7 +151,7 @@
         <h3>How it works:</h3>
         <p>1. Enter your MONAD wallet address</p>
         <p>2. Click "CLAIM NOW"</p>
-        <p>3. View the ad to support the faucet</p>
+        <p>3. View the ad to complete your claim</p>
         <p>4. Receive free MONAD tokens (0.5 MONAD per claim)</p>
         <p>5. You can claim again after 1 hour</p>
     </div>
@@ -186,7 +184,7 @@
                 claimButton.disabled = false;
                 claimButton.textContent = "CLAIM NOW";
                 
-                // Start cooldown timer (you would implement this properly)
+                // Start cooldown timer
                 startCooldownTimer();
                 
             }, 2000);
@@ -201,15 +199,6 @@
             // You would implement actual timer logic here
             console.log("Timer started - 1 hour cooldown");
         }
-        
-        // Detect ad blocker
-        window.addEventListener('load', function() {
-            const ad = document.querySelector('.ad-container iframe');
-            if (!ad || ad.offsetHeight === 0) {
-                document.querySelector('.ad-notice').innerHTML += 
-                    '<p style="color:#d63031;margin-top:8px;">We detected your ad-blocker. Please disable it to support this free service.</p>';
-            }
-        });
     </script>
 </body>
 </html>
