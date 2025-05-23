@@ -1,32 +1,36 @@
 import React from 'react';
-import { AppKitProvider, WalletModalProvider, ConnectButton } from '@reown/appkit';
-import { WagmiAdapter } from '@reown/appkit-adapter-wagmi';
-import { WagmiConfig, createConfig, configureChains, mainnet } from 'wagmi';
-import { publicProvider } from 'wagmi/providers/public';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { useConnect, useAccount } from 'wagmi';
 
-const { chains, publicClient } = configureChains([mainnet], [publicProvider()]);
+function App() {
+  const { connect, connectors, error, isLoading, pendingConnector } = useConnect();
+  const { address, isConnected } = useAccount();
 
-const config = createConfig({
-  autoConnect: true,
-  publicClient,
-});
-
-const queryClient = new QueryClient();
-
-export default function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <WagmiConfig config={config}>
-        <AppKitProvider adapter={new WagmiAdapter()}>
-          <WalletModalProvider>
-            <div style={{ padding: 30 }}>
-              <h1>WalletConnect + Reown</h1>
-              <ConnectButton />
-            </div>
-          </WalletModalProvider>
-        </AppKitProvider>
-      </WagmiConfig>
-    </QueryClientProvider>
+    <div style={{ padding: '2rem' }}>
+      <h1>Connect Your Wallet</h1>
+      {isConnected ? (
+        <div>
+          <p>Connected Address: {address}</p>
+        </div>
+      ) : (
+        <div>
+          {connectors.map((connector) => (
+            <button
+              disabled={!connector.ready}
+              key={connector.id}
+              onClick={() => connect({ connector })}
+              style={{ margin: '0.5rem' }}
+            >
+              {connector.name}
+              {!connector.ready && ' (unsupported)'}
+              {isLoading && connector.id === pendingConnector?.id && ' (connecting)'}
+            </button>
+          ))}
+          {error && <div>{error.message}</div>}
+        </div>
+      )}
+    </div>
   );
 }
+
+export default App;
