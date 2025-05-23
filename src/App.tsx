@@ -1,39 +1,27 @@
 import React from 'react';
-import {
-  AppKitProvider,
-  WalletModalProvider,
-  ConnectButton,
-} from '@reown/appkit';
+import { AppKitProvider, WalletModalProvider, ConnectButton } from '@reown/appkit';
 import { WagmiAdapter } from '@reown/appkit-adapter-wagmi';
-import {
-  createConfig,
-  configureChains,
-  WagmiConfig,
-} from 'wagmi';
-import { mainnet } from 'wagmi/chains';
+import { WagmiConfig, createConfig, configureChains, mainnet } from 'wagmi';
 import { publicProvider } from 'wagmi/providers/public';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
-const { chains, publicClient } = configureChains(
-  [mainnet],
-  [publicProvider()]
-);
+const { chains, publicClient } = configureChains([mainnet], [publicProvider()]);
 
-const wagmiConfig = createConfig({
+const config = createConfig({
   autoConnect: true,
   publicClient,
 });
 
 const queryClient = new QueryClient();
 
-function App() {
+export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <WagmiConfig config={wagmiConfig}>
+      <WagmiConfig config={config}>
         <AppKitProvider adapter={new WagmiAdapter()}>
           <WalletModalProvider>
-            <div style={{ padding: 30, fontFamily: 'Arial' }}>
-              <h1>WalletConnect + Reown App</h1>
+            <div style={{ padding: 30 }}>
+              <h1>WalletConnect + Reown</h1>
               <ConnectButton />
             </div>
           </WalletModalProvider>
@@ -42,5 +30,3 @@ function App() {
     </QueryClientProvider>
   );
 }
-
-export default App;
