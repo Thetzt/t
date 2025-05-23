@@ -8,17 +8,19 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@tanstack/react-query": "^5.28.4",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "viem": "^2.7.10",
-    "wagmi": "^2.16.0"
+    "wagmi": "^2.16.0",
+    "@tanstack/react-query": "^5.28.4",
+    "@reown/appkit": "^1.7.6",
+    "@reown/appkit-adapter-wagmi": "^1.7.6"
   },
   "devDependencies": {
-    "@types/react": "^18.2.14",
-    "@types/react-dom": "^18.2.7",
     "@vitejs/plugin-react": "^4.2.1",
     "typescript": "^5.4.5",
-    "vite": "^5.2.8"
+    "vite": "^5.2.8",
+    "@types/react": "^18.2.14",
+    "@types/react-dom": "^18.2.7"
   }
 }
