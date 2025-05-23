@@ -2,13 +2,13 @@ import React from 'react';
 import {
   AppKitProvider,
   WalletModalProvider,
-  ConnectButton
+  ConnectButton,
 } from '@reown/appkit';
 import { WagmiAdapter } from '@reown/appkit-adapter-wagmi';
 import {
   createConfig,
   configureChains,
-  WagmiConfig
+  WagmiConfig,
 } from 'wagmi';
 import { mainnet } from 'wagmi/chains';
 import { publicProvider } from 'wagmi/providers/public';
