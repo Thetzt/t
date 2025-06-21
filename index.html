@@ -1,12 +1,946 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <title>WalletConnect + Reown</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Testnet DEX - Advanced Blockchain Swap Platform</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+
+        .card-hover:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+
+        .animate-pulse-slow {
+            animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+
+        .smooth-transition {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .modal {
+            backdrop-filter: blur(8px);
+        }
+
+        .token-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .network-selector {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .swap-arrow {
+            transition: transform 0.3s ease;
+        }
+
+        .swap-arrow:hover {
+            transform: rotate(180deg);
+        }
+
+        .balance-shimmer {
+            background: linear-gradient(90deg, #f0f0f0 25%, transparent 37%, #f0f0f0 63%);
+            background-size: 400% 100%;
+            animation: shimmer 1.5s ease-in-out infinite;
+        }
+
+        @keyframes shimmer {
+            0% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .status-pending { color: #f59e0b; }
+        .status-completed { color: #10b981; }
+        .status-failed { color: #ef4444; }
+
+        .sidebar-transition {
+            transform: translateX(-100%);
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .sidebar-transition.open {
+            transform: translateX(0);
+        }
+
+        @media (min-width: 768px) {
+            .sidebar-transition {
+                transform: translateX(0);
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <button id="sidebarToggle" class="md:hidden mr-4 text-gray-500 hover:text-gray-700">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                    <div class="flex items-center space-x-2">
+                        <div class="w-8 h-8 bg-gradient-to-r from-purple-500 to-blue-600 rounded-full flex items-center justify-center">
+                            <i class="fas fa-exchange-alt text-white text-sm"></i>
+                        </div>
+                        <span class="text-xl font-bold text-gray-900">Testnet DEX</span>
+                    </div>
+                </div>
+                
+                <div class="hidden md:flex items-center space-x-6">
+                    <a href="#" class="text-gray-700 hover:text-purple-600 smooth-transition font-medium">Swap</a>
+                    <a href="#" class="text-gray-700 hover:text-purple-600 smooth-transition font-medium">Liquidity</a>
+                    <a href="#" class="text-gray-700 hover:text-purple-600 smooth-transition font-medium">Analytics</a>
+                    <a href="#" class="text-gray-700 hover:text-purple-600 smooth-transition font-medium">Docs</a>
+                </div>
+
+                <div class="flex items-center space-x-4">
+                    <div class="hidden sm:flex items-center bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm">
+                        <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse mr-2"></div>
+                        Testnet
+                    </div>
+                    
+                    <button id="connectWallet" class="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white px-4 py-2 rounded-lg smooth-transition font-medium">
+                        Connect Wallet
+                    </button>
+
+                    <button id="profileBtn" class="hidden w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center hover:bg-gray-400 smooth-transition">
+                        <i class="fas fa-user text-gray-600 text-sm"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Layout -->
+    <div class="flex">
+        <!-- Sidebar -->
+        <div id="sidebar" class="sidebar-transition fixed md:relative md:translate-x-0 w-64 bg-white shadow-lg h-screen md:h-auto z-40">
+            <div class="p-6">
+                <div class="space-y-6">
+                    <!-- User Profile Section -->
+                    <div id="userProfile" class="hidden bg-gradient-to-r from-purple-50 to-blue-50 p-4 rounded-lg border">
+                        <div class="flex items-center space-x-3 mb-3">
+                            <div class="w-10 h-10 bg-gradient-to-r from-purple-500 to-blue-600 rounded-full flex items-center justify-center">
+                                <i class="fas fa-user text-white text-sm"></i>
+                            </div>
+                            <div>
+                                <p class="font-medium text-gray-900">Connected</p>
+                                <p id="walletAddress" class="text-xs text-gray-500">0x1234...5678</p>
+                            </div>
+                        </div>
+                        <button id="logoutBtn" class="w-full bg-red-500 hover:bg-red-600 text-white px-3 py-2 rounded-md text-sm smooth-transition">
+                            <i class="fas fa-sign-out-alt mr-2"></i>Logout
+                        </button>
+                    </div>
+
+                    <!-- Navigation Menu -->
+                    <div class="space-y-2">
+                        <a href="#" id="swapTab" class="flex items-center space-x-3 bg-purple-100 text-purple-700 px-4 py-3 rounded-lg smooth-transition">
+                            <i class="fas fa-exchange-alt"></i>
+                            <span class="font-medium">Swap</span>
+                        </a>
+                        <a href="#" id="historyTab" class="flex items-center space-x-3 text-gray-700 hover:bg-gray-100 px-4 py-3 rounded-lg smooth-transition">
+                            <i class="fas fa-history"></i>
+                            <span class="font-medium">History</span>
+                        </a>
+                        <a href="#" id="assetsTab" class="flex items-center space-x-3 text-gray-700 hover:bg-gray-100 px-4 py-3 rounded-lg smooth-transition">
+                            <i class="fas fa-wallet"></i>
+                            <span class="font-medium">Assets</span>
+                        </a>
+                        <a href="#" class="flex items-center space-x-3 text-gray-700 hover:bg-gray-100 px-4 py-3 rounded-lg smooth-transition">
+                            <i class="fas fa-chart-line"></i>
+                            <span class="font-medium">Analytics</span>
+                        </a>
+                        <a href="#" class="flex items-center space-x-3 text-gray-700 hover:bg-gray-100 px-4 py-3 rounded-lg smooth-transition">
+                            <i class="fas fa-cog"></i>
+                            <span class="font-medium">Settings</span>
+                        </a>
+                    </div>
+
+                    <!-- Quick Stats -->
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                        <h3 class="text-sm font-medium text-gray-700 mb-3">Network Status</h3>
+                        <div class="space-y-2 text-sm">
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Gas Price</span>
+                                <span class="text-green-600">12 gwei</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Block Height</span>
+                                <span class="text-blue-600">18,542,123</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Active Pairs</span>
+                                <span class="text-purple-600">1,247</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="flex-1 p-6">
+            <!-- Swap Interface -->
+            <div id="swapContent" class="max-w-md mx-auto">
+                <div class="bg-white rounded-2xl shadow-xl p-6 card-hover">
+                    <div class="flex items-center justify-between mb-6">
+                        <h2 class="text-2xl font-bold text-gray-900">Swap Tokens</h2>
+                        <button class="text-gray-400 hover:text-gray-600 smooth-transition">
+                            <i class="fas fa-cog"></i>
+                        </button>
+                    </div>
+
+                    <!-- From Token -->
+                    <div class="mb-4">
+                        <div class="flex justify-between mb-2">
+                            <label class="text-sm font-medium text-gray-700">From</label>
+                            <span class="text-sm text-gray-500">Balance: <span id="fromBalance">0.0</span></span>
+                        </div>
+                        <div class="bg-gray-50 rounded-xl p-4 border-2 border-transparent hover:border-purple-200 smooth-transition">
+                            <div class="flex items-center justify-between">
+                                <input type="number" id="fromAmount" placeholder="0.0" class="bg-transparent text-2xl font-medium outline-none flex-1 mr-4">
+                                <button id="fromTokenSelect" class="flex items-center space-x-2 bg-white px-3 py-2 rounded-lg shadow-sm hover:shadow-md smooth-transition">
+                                    <img id="fromTokenIcon" src="https://cryptologos.cc/logos/polygon-matic-logo.png" alt="MATIC" class="token-icon">
+                                    <span id="fromTokenSymbol" class="font-medium">MATIC</span>
+                                    <i class="fas fa-chevron-down text-gray-400"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Swap Arrow -->
+                    <div class="flex justify-center my-4">
+                        <button id="swapArrow" class="swap-arrow bg-purple-100 hover:bg-purple-200 p-3 rounded-full smooth-transition">
+                            <i class="fas fa-arrow-down text-purple-600"></i>
+                        </button>
+                    </div>
+
+                    <!-- To Token -->
+                    <div class="mb-6">
+                        <div class="flex justify-between mb-2">
+                            <label class="text-sm font-medium text-gray-700">To</label>
+                            <span class="text-sm text-gray-500">Balance: <span id="toBalance">0.0</span></span>
+                        </div>
+                        <div class="bg-gray-50 rounded-xl p-4 border-2 border-transparent hover:border-purple-200 smooth-transition">
+                            <div class="flex items-center justify-between">
+                                <input type="number" id="toAmount" placeholder="0.0" class="bg-transparent text-2xl font-medium outline-none flex-1 mr-4" readonly>
+                                <button id="toTokenSelect" class="flex items-center space-x-2 bg-white px-3 py-2 rounded-lg shadow-sm hover:shadow-md smooth-transition">
+                                    <img id="toTokenIcon" src="https://docs.monad.xyz/img/monad_logo.png" alt="MONAD" class="token-icon">
+                                    <span id="toTokenSymbol" class="font-medium">MONAD</span>
+                                    <i class="fas fa-chevron-down text-gray-400"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Exchange Rate -->
+                    <div id="exchangeRate" class="bg-blue-50 p-3 rounded-lg mb-4 hidden">
+                        <div class="flex items-center justify-between text-sm">
+                            <span class="text-gray-600">Exchange Rate</span>
+                            <span class="font-medium text-blue-600">1 MATIC = 0.85 MONAD</span>
+                        </div>
+                    </div>
+
+                    <!-- Swap Button -->
+                    <button id="swapBtn" class="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white py-4 rounded-xl font-semibold smooth-transition shadow-lg hover:shadow-xl">
+                        Connect Wallet to Swap
+                    </button>
+
+                    <!-- Recent Activity -->
+                    <div class="mt-6 pt-6 border-t border-gray-100">
+                        <h3 class="text-sm font-medium text-gray-700 mb-3">Recent Swaps</h3>
+                        <div id="recentSwaps" class="space-y-2">
+                            <div class="flex items-center justify-between text-xs text-gray-500 bg-gray-50 p-2 rounded">
+                                <span>MATIC → MONAD</span>
+                                <span class="status-completed">✓ Completed</span>
+                            </div>
+                            <div class="flex items-center justify-between text-xs text-gray-500 bg-gray-50 p-2 rounded">
+                                <span>ETH → MEGA</span>
+                                <span class="status-pending">⏳ Pending</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Transaction History -->
+            <div id="historyContent" class="hidden max-w-4xl mx-auto">
+                <div class="bg-white rounded-2xl shadow-xl p-6">
+                    <div class="flex items-center justify-between mb-6">
+                        <h2 class="text-2xl font-bold text-gray-900">Transaction History</h2>
+                        <div class="flex space-x-2">
+                            <button class="bg-gray-100 hover:bg-gray-200 px-4 py-2 rounded-lg text-sm smooth-transition">
+                                <i class="fas fa-filter mr-2"></i>Filter
+                            </button>
+                            <button class="bg-gray-100 hover:bg-gray-200 px-4 py-2 rounded-lg text-sm smooth-transition">
+                                <i class="fas fa-download mr-2"></i>Export
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead>
+                                <tr class="border-b border-gray-200">
+                                    <th class="text-left py-3 px-4 font-medium text-gray-700">Time</th>
+                                    <th class="text-left py-3 px-4 font-medium text-gray-700">Pair</th>
+                                    <th class="text-left py-3 px-4 font-medium text-gray-700">Amount</th>
+                                    <th class="text-left py-3 px-4 font-medium text-gray-700">Status</th>
+                                    <th class="text-left py-3 px-4 font-medium text-gray-700">TX Hash</th>
+                                </tr>
+                            </thead>
+                            <tbody id="historyTableBody">
+                                <tr class="border-b border-gray-100 hover:bg-gray-50">
+                                    <td class="py-3 px-4 text-sm text-gray-600">2 mins ago</td>
+                                    <td class="py-3 px-4">
+                                        <div class="flex items-center space-x-2">
+                                            <img src="https://cryptologos.cc/logos/polygon-matic-logo.png" alt="MATIC" class="w-6 h-6 rounded-full">
+                                            <span>→</span>
+                                            <img src="https://docs.monad.xyz/img/monad_logo.png" alt="MONAD" class="w-6 h-6 rounded-full">
+                                            <span class="text-sm font-medium">MATIC/MONAD</span>
+                                        </div>
+                                    </td>
+                                    <td class="py-3 px-4 text-sm">100 MATIC</td>
+                                    <td class="py-3 px-4">
+                                        <span class="status-completed bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs">Completed</span>
+                                    </td>
+                                    <td class="py-3 px-4 text-sm text-blue-600 font-mono">0x1234...abcd</td>
+                                </tr>
+                                <tr class="border-b border-gray-100 hover:bg-gray-50">
+                                    <td class="py-3 px-4 text-sm text-gray-600">5 mins ago</td>
+                                    <td class="py-3 px-4">
+                                        <div class="flex items-center space-x-2">
+                                            <img src="https://upload.wikimedia.org/wikipedia/commons/d/d0/Eth-diamond-rainbow.png" alt="ETH" class="w-6 h-6 rounded-full">
+                                            <span>→</span>
+                                            <img src="https://pbs.twimg.com/profile_images/1861751545790070784/KvlxTzAq_400x400.jpg" alt="MEGA" class="w-6 h-6 rounded-full">
+                                            <span class="text-sm font-medium">ETH/MEGA</span>
+                                        </div>
+                                    </td>
+                                    <td class="py-3 px-4 text-sm">0.5 ETH</td>
+                                    <td class="py-3 px-4">
+                                        <span class="status-pending bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-xs">Pending</span>
+                                    </td>
+                                    <td class="py-3 px-4 text-sm text-blue-600 font-mono">0x5678...efgh</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Assets Overview -->
+            <div id="assetsContent" class="hidden max-w-4xl mx-auto">
+                <div class="bg-white rounded-2xl shadow-xl p-6">
+                    <div class="flex items-center justify-between mb-6">
+                        <h2 class="text-2xl font-bold text-gray-900">Your Assets</h2>
+                        <button class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg smooth-transition">
+                            <i class="fas fa-plus mr-2"></i>Add Token
+                        </button>
+                    </div>
+
+                    <div class="grid gap-4">
+                        <div class="bg-gradient-to-r from-purple-50 to-blue-50 p-4 rounded-lg border">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-3">
+                                    <img src="https://cryptologos.cc/logos/polygon-matic-logo.png" alt="MATIC" class="w-10 h-10 rounded-full">
+                                    <div>
+                                        <h3 class="font-medium text-gray-900">Polygon MATIC</h3>
+                                        <p class="text-sm text-gray-500">Polygon Network</p>
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    <p class="font-semibold text-gray-900">1,234.56 MATIC</p>
+                                    <p class="text-sm text-gray-500">$987.65</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-gradient-to-r from-blue-50 to-indigo-50 p-4 rounded-lg border">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-3">
+                                    <img src="https://upload.wikimedia.org/wikipedia/commons/d/d0/Eth-diamond-rainbow.png" alt="ETH" class="w-10 h-10 rounded-full">
+                                    <div>
+                                        <h3 class="font-medium text-gray-900">Ethereum</h3>
+                                        <p class="text-sm text-gray-500">Ethereum Network</p>
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    <p class="font-semibold text-gray-900">2.45 ETH</p>
+                                    <p class="text-sm text-gray-500">$4,521.30</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-gradient-to-r from-green-50 to-emerald-50 p-4 rounded-lg border">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-3">
+                                    <img src="https://docs.monad.xyz/img/monad_logo.png" alt="MONAD" class="w-10 h-10 rounded-full">
+                                    <div>
+                                        <h3 class="font-medium text-gray-900">Monad</h3>
+                                        <p class="text-sm text-gray-500">Monad Testnet</p>
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    <p class="font-semibold text-gray-900">850.00 MONAD</p>
+                                    <p class="text-sm text-gray-500">Testnet</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Connect Wallet Modal -->
+    <div id="walletModal" class="fixed inset-0 bg-black bg-opacity-50 modal hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl p-6 w-full max-w-md">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-xl font-bold text-gray-900">Connect Wallet</h3>
+                <button id="closeWalletModal" class="text-gray-400 hover:text-gray-600">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <div class="space-y-3">
+                <button class="wallet-option w-full flex items-center space-x-4 p-4 rounded-lg border hover:border-purple-300 hover:bg-purple-50 smooth-transition">
+                    <div class="w-10 h-10 bg-orange-500 rounded-full flex items-center justify-center">
+                        <i class="fab fa-firefox text-white"></i>
+                    </div>
+                    <div class="flex-1 text-left">
+                        <p class="font-medium text-gray-900">MetaMask</p>
+                        <p class="text-sm text-gray-500">Connect using browser wallet</p>
+                    </div>
+                </button>
+
+                <button class="wallet-option w-full flex items-center space-x-4 p-4 rounded-lg border hover:border-purple-300 hover:bg-purple-50 smooth-transition">
+                    <div class="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center">
+                        <i class="fas fa-wallet text-white"></i>
+                    </div>
+                    <div class="flex-1 text-left">
+                        <p class="font-medium text-gray-900">WalletConnect</p>
+                        <p class="text-sm text-gray-500">Connect using mobile wallet</p>
+                    </div>
+                </button>
+
+                <button class="wallet-option w-full flex items-center space-x-4 p-4 rounded-lg border hover:border-purple-300 hover:bg-purple-50 smooth-transition">
+                    <div class="w-10 h-10 bg-indigo-500 rounded-full flex items-center justify-center">
+                        <i class="fas fa-shield-alt text-white"></i>
+                    </div>
+                    <div class="flex-1 text-left">
+                        <p class="font-medium text-gray-900">Coinbase Wallet</p>
+                        <p class="text-sm text-gray-500">Connect using Coinbase</p>
+                    </div>
+                </button>
+            </div>
+
+            <div class="mt-6 text-center text-xs text-gray-500">
+                By connecting a wallet, you agree to our Terms of Service
+            </div>
+        </div>
+    </div>
+
+    <!-- Token Selection Modal -->
+    <div id="tokenModal" class="fixed inset-0 bg-black bg-opacity-50 modal hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl p-6 w-full max-w-md">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-xl font-bold text-gray-900">Select Token</h3>
+                <button id="closeTokenModal" class="text-gray-400 hover:text-gray-600">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <div class="mb-4">
+                <input type="text" id="tokenSearch" placeholder="Search tokens..." class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+            </div>
+
+            <div id="tokenList" class="network-selector space-y-2">
+                <!-- From Tokens -->
+                <div class="token-item flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 cursor-pointer" data-token="MATIC" data-icon="https://cryptologos.cc/logos/polygon-matic-logo.png" data-name="Polygon MATIC">
+                    <img src="https://cryptologos.cc/logos/polygon-matic-logo.png" alt="MATIC" class="token-icon">
+                    <div class="flex-1">
+                        <p class="font-medium text-gray-900">Polygon MATIC</p>
+                        <p class="text-sm text-gray-500">MATIC</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-sm text-gray-900">1,234.56</p>
+                    </div>
+                </div>
+
+                <div class="token-item flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 cursor-pointer" data-token="ETH" data-icon="https://upload.wikimedia.org/wikipedia/commons/d/d0/Eth-diamond-rainbow.png" data-name="Ethereum">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/d/d0/Eth-diamond-rainbow.png" alt="ETH" class="token-icon">
+                    <div class="flex-1">
+                        <p class="font-medium text-gray-900">Ethereum</p>
+                        <p class="text-sm text-gray-500">ETH</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-sm text-gray-900">2.45</p>
+                    </div>
+                </div>
+
+                <div class="token-item flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 cursor-pointer" data-token="BNB" data-icon="https://images.seeklogo.com/logo-png/44/2/binance-smart-chain-bsc-logo-png_seeklogo-446621.png" data-name="BNB Smart Chain">
+                    <img src="https://images.seeklogo.com/logo-png/44/2/binance-smart-chain-bsc-logo-png_seeklogo-446621.png" alt="BNB" class="token-icon">
+                    <div class="flex-1">
+                        <p class="font-medium text-gray-900">BNB Smart Chain</p>
+                        <p class="text-sm text-gray-500">BNB</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-sm text-gray-900">15.25</p>
+                    </div>
+                </div>
+
+                <div class="token-item flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 cursor-pointer" data-token="BASE" data-icon="https://altcoinsbox.com/wp-content/uploads/2023/02/base-logo-in-blue.png" data-name="Base">
+                    <img src="https://altcoinsbox.com/wp-content/uploads/2023/02/base-logo-in-blue.png" alt="BASE" class="token-icon">
+                    <div class="flex-1">
+                        <p class="font-medium text-gray-900">Base</p>
+                        <p class="text-sm text-gray-500">BASE</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-sm text-gray-900">500.00</p>
+                    </div>
+                </div>
+
+                <!-- To Tokens -->
+                <div class="border-t pt-2 mt-2">
+                    <p class="text-xs text-gray-500 uppercase tracking-wide mb-2 px-3">Testnet Tokens</p>
+                </div>
+
+                <div class="token-item flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 cursor-pointer" data-token="MONAD" data-icon="https://docs.monad.xyz/img/monad_logo.png" data-name="Monad">
+                    <img src="https://docs.monad.xyz/img/monad_logo.png" alt="MONAD" class="token-icon">
+                    <div class="flex-1">
+                        <p class="font-medium text-gray-900">Monad</p>
+                        <p class="text-sm text-gray-500">MONAD</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-sm text-gray-900">850.00</p>
+                    </div>
+                </div>
+
+                <div class="token-item flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 cursor-pointer" data-token="MEGA" data-icon="https://pbs.twimg.com/profile_images/1861751545790070784/KvlxTzAq_400x400.jpg" data-name="MegaETH">
+                    <img src="https://pbs.twimg.com/profile_images/1861751545790070784/KvlxTzAq_400x400.jpg" alt="MEGA" class="token-icon">
+                    <div class="flex-1">
+                        <p class="font-medium text-gray-900">MegaETH</p>
+                        <p class="text-sm text-gray-500">MEGA</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-sm text-gray-900">120.50</p>
+                    </div>
+                </div>
+
+                <div class="token-item flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 cursor-pointer" data-token="OGETH" data-icon="https://upload.wikimedia.org/wikipedia/commons/d/d0/Eth-diamond-rainbow.png" data-name="OG ETH">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/d/d0/Eth-diamond-rainbow.png" alt="OGETH" class="token-icon">
+                    <div class="flex-1">
+                        <p class="font-medium text-gray-900">OG ETH</p>
+                        <p class="text-sm text-gray-500">OGETH</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-sm text-gray-900">75.25</p>
+                    </div>
+                </div>
+
+                <div class="token-item flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 cursor-pointer" data-token="SPOIL" data-icon="https://via.placeholder.com/32/ff6b6b/ffffff?text=S" data-name="Spoil">
+                    <img src="https://via.placeholder.com/32/ff6b6b/ffffff?text=S" alt="SPOIL" class="token-icon">
+                    <div class="flex-1">
+                        <p class="font-medium text-gray-900">Spoil</p>
+                        <p class="text-sm text-gray-500">SPOIL</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-sm text-gray-900">1,500.00</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Overlay for mobile sidebar -->
+    <div id="sidebarOverlay" class="fixed inset-0 bg-black bg-opacity-50 z-30 hidden md:hidden"></div>
+
+    <script>
+        // Global state
+        let isWalletConnected = false;
+        let currentTokenSelection = null;
+        let walletAddress = '0x1234567890abcdef';
+
+        // DOM elements
+        const connectWalletBtn = document.getElementById('connectWallet');
+        const walletModal = document.getElementById('walletModal');
+        const tokenModal = document.getElementById('tokenModal');
+        const profileBtn = document.getElementById('profileBtn');
+        const userProfile = document.getElementById('userProfile');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const sidebarToggle = document.getElementById('sidebarToggle');
+        const sidebar = document.getElementById('sidebar');
+        const sidebarOverlay = document.getElementById('sidebarOverlay');
+
+        // Tab elements
+        const swapTab = document.getElementById('swapTab');
+        const historyTab = document.getElementById('historyTab');
+        const assetsTab = document.getElementById('assetsTab');
+        const swapContent = document.getElementById('swapContent');
+        const historyContent = document.getElementById('historyContent');
+        const assetsContent = document.getElementById('assetsContent');
+
+        // Swap elements
+        const fromTokenSelect = document.getElementById('fromTokenSelect');
+        const toTokenSelect = document.getElementById('toTokenSelect');
+        const fromAmount = document.getElementById('fromAmount');
+        const toAmount = document.getElementById('toAmount');
+        const swapBtn = document.getElementById('swapBtn');
+        const swapArrow = document.getElementById('swapArrow');
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeEventListeners();
+            updateSwapButton();
+        });
+
+        function initializeEventListeners() {
+            // Wallet connection
+            connectWalletBtn.addEventListener('click', () => showModal(walletModal));
+            document.getElementById('closeWalletModal').addEventListener('click', () => hideModal(walletModal));
+            
+            // Wallet options
+            document.querySelectorAll('.wallet-option').forEach(option => {
+                option.addEventListener('click', connectWallet);
+            });
+
+            // Token selection
+            fromTokenSelect.addEventListener('click', () => {
+                currentTokenSelection = 'from';
+                showModal(tokenModal);
+            });
+            toTokenSelect.addEventListener('click', () => {
+                currentTokenSelection = 'to';
+                showModal(tokenModal);
+            });
+            document.getElementById('closeTokenModal').addEventListener('click', () => hideModal(tokenModal));
+
+            // Token list items
+            document.querySelectorAll('.token-item').forEach(item => {
+                item.addEventListener('click', selectToken);
+            });
+
+            // Profile and logout
+            logoutBtn.addEventListener('click', disconnectWallet);
+
+            // Sidebar toggle
+            sidebarToggle.addEventListener('click', toggleSidebar);
+            sidebarOverlay.addEventListener('click', closeSidebar);
+
+            // Tab navigation
+            swapTab.addEventListener('click', (e) => showTab(e, 'swap'));
+            historyTab.addEventListener('click', (e) => showTab(e, 'history'));
+            assetsTab.addEventListener('click', (e) => showTab(e, 'assets'));
+
+            // Swap functionality
+            fromAmount.addEventListener('input', calculateSwapAmount);
+            swapArrow.addEventListener('click', swapTokens);
+            swapBtn.addEventListener('click', executeSwap);
+
+            // Token search
+            document.getElementById('tokenSearch').addEventListener('input', filterTokens);
+
+            // Modal outside click
+            walletModal.addEventListener('click', (e) => {
+                if (e.target === walletModal) hideModal(walletModal);
+            });
+            tokenModal.addEventListener('click', (e) => {
+                if (e.target === tokenModal) hideModal(tokenModal);
+            });
+        }
+
+        function showModal(modal) {
+            modal.classList.remove('hidden');
+            setTimeout(() => modal.style.opacity = '1', 10);
+        }
+
+        function hideModal(modal) {
+            modal.style.opacity = '0';
+            setTimeout(() => modal.classList.add('hidden'), 300);
+        }
+
+        function connectWallet() {
+            isWalletConnected = true;
+            hideModal(walletModal);
+            
+            // Update UI
+            connectWalletBtn.textContent = `${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}`;
+            connectWalletBtn.classList.add('bg-green-600', 'hover:bg-green-700');
+            connectWalletBtn.classList.remove('bg-gradient-to-r', 'from-purple-600', 'to-blue-600', 'hover:from-purple-700', 'hover:to-blue-700');
+            
+            profileBtn.classList.remove('hidden');
+            userProfile.classList.remove('hidden');
+            document.getElementById('walletAddress').textContent = walletAddress;
+            
+            updateSwapButton();
+            
+            // Show success animation
+            showToast('Wallet connected successfully!', 'success');
+        }
+
+        function disconnectWallet() {
+            isWalletConnected = false;
+            
+            // Reset UI
+            connectWalletBtn.textContent = 'Connect Wallet';
+            connectWalletBtn.classList.remove('bg-green-600', 'hover:bg-green-700');
+            connectWalletBtn.classList.add('bg-gradient-to-r', 'from-purple-600', 'to-blue-600', 'hover:from-purple-700', 'hover:to-blue-700');
+            
+            profileBtn.classList.add('hidden');
+            userProfile.classList.add('hidden');
+            
+            updateSwapButton();
+            showToast('Wallet disconnected', 'info');
+        }
+
+        function selectToken(e) {
+            const tokenData = {
+                symbol: e.currentTarget.dataset.token,
+                icon: e.currentTarget.dataset.icon,
+                name: e.currentTarget.dataset.name
+            };
+
+            if (currentTokenSelection === 'from') {
+                document.getElementById('fromTokenSymbol').textContent = tokenData.symbol;
+                document.getElementById('fromTokenIcon').src = tokenData.icon;
+                document.getElementById('fromTokenIcon').alt = tokenData.symbol;
+            } else {
+                document.getElementById('toTokenSymbol').textContent = tokenData.symbol;
+                document.getElementById('toTokenIcon').src = tokenData.icon;
+                document.getElementById('toTokenIcon').alt = tokenData.symbol;
+            }
+
+            hideModal(tokenModal);
+            calculateSwapAmount();
+        }
+
+        function toggleSidebar() {
+            sidebar.classList.toggle('open');
+            sidebarOverlay.classList.toggle('hidden');
+        }
+
+        function closeSidebar() {
+            sidebar.classList.remove('open');
+            sidebarOverlay.classList.add('hidden');
+        }
+
+        function showTab(e, tabName) {
+            e.preventDefault();
+            
+            // Update tab styles
+            document.querySelectorAll('#sidebar a').forEach(tab => {
+                tab.classList.remove('bg-purple-100', 'text-purple-700');
+                tab.classList.add('text-gray-700', 'hover:bg-gray-100');
+            });
+            e.target.closest('a').classList.add('bg-purple-100', 'text-purple-700');
+            e.target.closest('a').classList.remove('text-gray-700', 'hover:bg-gray-100');
+
+            // Hide all content
+            swapContent.classList.add('hidden');
+            historyContent.classList.add('hidden');
+            assetsContent.classList.add('hidden');
+
+            // Show selected content
+            switch(tabName) {
+                case 'swap':
+                    swapContent.classList.remove('hidden');
+                    break;
+                case 'history':
+                    historyContent.classList.remove('hidden');
+                    loadTransactionHistory();
+                    break;
+                case 'assets':
+                    assetsContent.classList.remove('hidden');
+                    loadAssets();
+                    break;
+            }
+
+            // Close sidebar on mobile
+            if (window.innerWidth < 768) {
+                closeSidebar();
+            }
+        }
+
+        function calculateSwapAmount() {
+            const fromVal = parseFloat(fromAmount.value) || 0;
+            if (fromVal > 0) {
+                // Simulate exchange rate calculation
+                const rate = 0.85; // Example rate
+                toAmount.value = (fromVal * rate).toFixed(6);
+                document.getElementById('exchangeRate').classList.remove('hidden');
+            } else {
+                toAmount.value = '';
+                document.getElementById('exchangeRate').classList.add('hidden');
+            }
+        }
+
+        function swapTokens() {
+            const fromToken = {
+                symbol: document.getElementById('fromTokenSymbol').textContent,
+                icon: document.getElementById('fromTokenIcon').src
+            };
+            const toToken = {
+                symbol: document.getElementById('toTokenSymbol').textContent,
+                icon: document.getElementById('toTokenIcon').src
+            };
+
+            // Swap the tokens
+            document.getElementById('fromTokenSymbol').textContent = toToken.symbol;
+            document.getElementById('fromTokenIcon').src = toToken.icon;
+            document.getElementById('toTokenSymbol').textContent = fromToken.symbol;
+            document.getElementById('toTokenIcon').src = fromToken.icon;
+
+            // Clear amounts
+            fromAmount.value = '';
+            toAmount.value = '';
+            document.getElementById('exchangeRate').classList.add('hidden');
+        }
+
+        function updateSwapButton() {
+            if (!isWalletConnected) {
+                swapBtn.textContent = 'Connect Wallet to Swap';
+                swapBtn.disabled = false;
+            } else if (!fromAmount.value || parseFloat(fromAmount.value) <= 0) {
+                swapBtn.textContent = 'Enter Amount';
+                swapBtn.disabled = true;
+            } else {
+                swapBtn.textContent = 'Swap Tokens';
+                swapBtn.disabled = false;
+            }
+        }
+
+        function executeSwap() {
+            if (!isWalletConnected) {
+                showModal(walletModal);
+                return;
+            }
+
+            if (!fromAmount.value || parseFloat(fromAmount.value) <= 0) {
+                showToast('Please enter a valid amount', 'error');
+                return;
+            }
+
+            // Simulate swap execution
+            swapBtn.textContent = 'Swapping...';
+            swapBtn.disabled = true;
+
+            setTimeout(() => {
+                addTransaction();
+                fromAmount.value = '';
+                toAmount.value = '';
+                document.getElementById('exchangeRate').classList.add('hidden');
+                updateSwapButton();
+                showToast('Swap completed successfully!', 'success');
+            }, 2000);
+        }
+
+        function addTransaction() {
+            const fromSymbol = document.getElementById('fromTokenSymbol').textContent;
+            const toSymbol = document.getElementById('toTokenSymbol').textContent;
+            const amount = fromAmount.value;
+            
+            const transaction = {
+                time: 'Just now',
+                pair: `${fromSymbol}/${toSymbol}`,
+                amount: `${amount} ${fromSymbol}`,
+                status: 'completed',
+                hash: '0x' + Math.random().toString(16).substr(2, 8) + '...' + Math.random().toString(16).substr(2, 4)
+            };
+
+            // Add to recent swaps
+            const recentSwaps = document.getElementById('recentSwaps');
+            const swapElement = document.createElement('div');
+            swapElement.className = 'flex items-center justify-between text-xs text-gray-500 bg-gray-50 p-2 rounded';
+            swapElement.innerHTML = `
+                <span>${fromSymbol} → ${toSymbol}</span>
+                <span class="status-completed">✓ Completed</span>
+            `;
+            recentSwaps.insertBefore(swapElement, recentSwaps.firstChild);
+        }
+
+        function loadTransactionHistory() {
+            // Simulate loading transaction history
+            const tbody = document.getElementById('historyTableBody');
+            // Add more transactions here if needed
+        }
+
+        function loadAssets() {
+            // Simulate loading assets
+            // Assets are already populated in HTML
+        }
+
+        function filterTokens() {
+            const searchTerm = document.getElementById('tokenSearch').value.toLowerCase();
+            const tokenItems = document.querySelectorAll('.token-item');
+            
+            tokenItems.forEach(item => {
+                const tokenName = item.dataset.name.toLowerCase();
+                const tokenSymbol = item.dataset.token.toLowerCase();
+                
+                if (tokenName.includes(searchTerm) || tokenSymbol.includes(searchTerm)) {
+                    item.style.display = 'flex';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+
+        function showToast(message, type = 'info') {
+            const toast = document.createElement('div');
+            toast.className = `fixed top-4 right-4 z-50 p-4 rounded-lg shadow-lg text-white ${
+                type === 'success' ? 'bg-green-500' : 
+                type === 'error' ? 'bg-red-500' : 
+                'bg-blue-500'
+            }`;
+            toast.textContent = message;
+            
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
+        }
+
+        // Update swap button when amount changes
+        fromAmount.addEventListener('input', updateSwapButton);
+
+        // Responsive handling
+        window.addEventListener('resize', () => {
+            if (window.innerWidth >= 768) {
+                closeSidebar();
+            }
+        });
+
+        // Auto-update balances (simulate)
+        setInterval(() => {
+            if (isWalletConnected) {
+                // Simulate balance updates
+                const balances = ['1,234.56', '2.45', '15.25', '500.00', '850.00', '120.50', '75.25', '1,500.00'];
+                const randomBalance = balances[Math.floor(Math.random() * balances.length)];
+                document.getElementById('fromBalance').textContent = randomBalance;
+                document.getElementById('toBalance').textContent = (Math.random() * 1000).toFixed(2);
+            }
+        }, 5000);
+    </script>
+</body>
 </html>
