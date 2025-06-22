@@ -1,35 +1,664 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>API Key Check</title>
-  <style>
-    body { font-family: Arial, sans-serif; padding: 2rem; }
-    #status { margin-top: 1rem; font-weight: bold; }
-  </style>
-</head>
-<body>
-  <h1>Check API Key Status</h1>
-  <button onclick="checkApi()">Check API</button>
-  <div id="status"></div>
-
-  <script>
-    async function checkApi() {
-      const statusEl = document.getElementById("status");
-      statusEl.textContent = "Checking...";
-
-      try {
-        const response = await fetch("/api/check-api");
-        const result = await response.json();
-        if (result.balance !== undefined) {
-          statusEl.textContent = `✅ API Working! Balance: $${result.balance}`;
-        } else {
-          statusEl.textContent = `❌ API Error: ${JSON.stringify(result)}`;
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SMM Panel - Social Media Marketing Services</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         }
-      } catch (error) {
-        statusEl.textContent = `❌ Error: ${error.message}`;
-      }
-    }
-  </script>
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        .loading {
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="gradient-bg shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <i class="fas fa-rocket text-white text-2xl mr-3"></i>
+                    <span class="text-white text-xl font-bold">SMM Panel</span>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div class="text-white">
+                        <span class="mr-2">Balance:</span>
+                        <span id="userBalance" class="font-bold">$0.00</span>
+                    </div>
+                    <button id="refreshBalance" class="text-white hover:text-gray-200">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- API Key Modal -->
+    <div id="apiKeyModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+        <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+            <div class="mt-3 text-center">
+                <h3 class="text-lg font-medium text-gray-900 mb-4">Enter API Key</h3>
+                <input type="password" id="apiKeyInput" placeholder="Your API Key" 
+                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <div class="flex justify-center mt-4 space-x-3">
+                    <button id="saveApiKey" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+                        Save
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        
+        <!-- Hero Section -->
+        <div class="text-center mb-12">
+            <h1 class="text-4xl font-bold text-gray-900 mb-4">Professional SMM Services</h1>
+            <p class="text-xl text-gray-600 mb-8">Boost your social media presence with high-quality services</p>
+        </div>
+
+        <!-- Service Categories -->
+        <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 mb-8">
+            <div class="category-card card-hover bg-white p-4 rounded-lg shadow text-center cursor-pointer" data-platform="instagram">
+                <i class="fab fa-instagram text-pink-500 text-3xl mb-2"></i>
+                <p class="font-semibold">Instagram</p>
+            </div>
+            <div class="category-card card-hover bg-white p-4 rounded-lg shadow text-center cursor-pointer" data-platform="tiktok">
+                <i class="fab fa-tiktok text-black text-3xl mb-2"></i>
+                <p class="font-semibold">TikTok</p>
+            </div>
+            <div class="category-card card-hover bg-white p-4 rounded-lg shadow text-center cursor-pointer" data-platform="youtube">
+                <i class="fab fa-youtube text-red-500 text-3xl mb-2"></i>
+                <p class="font-semibold">YouTube</p>
+            </div>
+            <div class="category-card card-hover bg-white p-4 rounded-lg shadow text-center cursor-pointer" data-platform="twitter">
+                <i class="fab fa-twitter text-blue-500 text-3xl mb-2"></i>
+                <p class="font-semibold">Twitter</p>
+            </div>
+            <div class="category-card card-hover bg-white p-4 rounded-lg shadow text-center cursor-pointer" data-platform="telegram">
+                <i class="fab fa-telegram text-blue-400 text-3xl mb-2"></i>
+                <p class="font-semibold">Telegram</p>
+            </div>
+            <div class="category-card card-hover bg-white p-4 rounded-lg shadow text-center cursor-pointer" data-platform="all">
+                <i class="fas fa-globe text-purple-500 text-3xl mb-2"></i>
+                <p class="font-semibold">All Services</p>
+            </div>
+        </div>
+
+        <!-- Service Search -->
+        <div class="mb-6">
+            <div class="flex flex-col md:flex-row gap-4">
+                <input type="text" id="serviceSearch" placeholder="Search services..." 
+                       class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <select id="categoryFilter" class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <option value="">All Categories</option>
+                </select>
+                <button id="loadServices" class="px-6 py-2 gradient-bg text-white rounded-lg hover:opacity-90">
+                    <i class="fas fa-sync-alt mr-2"></i>Load Services
+                </button>
+            </div>
+        </div>
+
+        <!-- Services Grid -->
+        <div id="servicesGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+            <!-- Services will be loaded here -->
+        </div>
+
+        <!-- Order Form Modal -->
+        <div id="orderModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 hidden">
+            <div class="relative top-20 mx-auto p-5 border w-full max-w-md shadow-lg rounded-md bg-white">
+                <div class="mt-3">
+                    <h3 class="text-lg font-medium text-gray-900 mb-4">Place Order</h3>
+                    <div id="selectedService" class="mb-4 p-3 bg-gray-100 rounded"></div>
+                    <form id="orderForm">
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Link</label>
+                            <input type="url" id="orderLink" required 
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Quantity</label>
+                            <input type="number" id="orderQuantity" required 
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <div class="text-sm text-gray-500 mt-1">
+                                Min: <span id="minQuantity">0</span> - Max: <span id="maxQuantity">0</span>
+                            </div>
+                        </div>
+                        <div class="mb-4">
+                            <div class="text-lg font-semibold">
+                                Total: $<span id="totalCost">0.00</span>
+                            </div>
+                        </div>
+                        <div class="flex justify-end space-x-3">
+                            <button type="button" id="cancelOrder" class="px-4 py-2 border border-gray-300 rounded hover:bg-gray-50">
+                                Cancel
+                            </button>
+                            <button type="submit" class="px-4 py-2 gradient-bg text-white rounded hover:opacity-90">
+                                Place Order
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Order History -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-2xl font-bold text-gray-900">Order History</h2>
+                <button id="refreshOrders" class="px-4 py-2 gradient-bg text-white rounded hover:opacity-90">
+                    <i class="fas fa-sync-alt mr-2"></i>Refresh
+                </button>
+            </div>
+            <div id="orderHistory" class="overflow-x-auto">
+                <!-- Order history will be loaded here -->
+            </div>
+        </div>
+
+        <!-- Order Tracking -->
+        <div class="bg-white rounded-lg shadow-lg p-6">
+            <h2 class="text-2xl font-bold text-gray-900 mb-4">Track Order</h2>
+            <div class="flex gap-4 mb-4">
+                <input type="text" id="trackOrderId" placeholder="Enter Order ID" 
+                       class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <button id="trackOrder" class="px-6 py-2 gradient-bg text-white rounded-lg hover:opacity-90">
+                    Track
+                </button>
+            </div>
+            <div id="orderStatus" class="hidden p-4 bg-gray-100 rounded-lg">
+                <!-- Order status will be displayed here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="gradient-bg text-white py-8 mt-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <p>&copy; 2024 SMM Panel. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        class SMMPanel {
+            constructor() {
+                this.API_URL = 'https://justanotherpanel.com/api/v2';
+                this.apiKey = localStorage.getItem('smm_api_key') || '';
+                this.services = [];
+                this.orders = JSON.parse(localStorage.getItem('smm_orders') || '[]');
+                this.currentService = null;
+                
+                this.init();
+            }
+
+            init() {
+                this.bindEvents();
+                if (!this.apiKey) {
+                    this.showApiKeyModal();
+                } else {
+                    this.hideApiKeyModal();
+                    this.loadBalance();
+                    this.loadServices();
+                }
+            }
+
+            bindEvents() {
+                // API Key
+                document.getElementById('saveApiKey').addEventListener('click', () => this.saveApiKey());
+                document.getElementById('apiKeyInput').addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') this.saveApiKey();
+                });
+
+                // Balance
+                document.getElementById('refreshBalance').addEventListener('click', () => this.loadBalance());
+
+                // Services
+                document.getElementById('loadServices').addEventListener('click', () => this.loadServices());
+                document.getElementById('serviceSearch').addEventListener('input', () => this.filterServices());
+                document.getElementById('categoryFilter').addEventListener('change', () => this.filterServices());
+
+                // Categories
+                document.querySelectorAll('.category-card').forEach(card => {
+                    card.addEventListener('click', () => this.filterByPlatform(card.dataset.platform));
+                });
+
+                // Order Form
+                document.getElementById('cancelOrder').addEventListener('click', () => this.hideOrderModal());
+                document.getElementById('orderForm').addEventListener('submit', (e) => this.submitOrder(e));
+                document.getElementById('orderQuantity').addEventListener('input', () => this.calculateTotal());
+
+                // Order Tracking
+                document.getElementById('trackOrder').addEventListener('click', () => this.trackOrder());
+                document.getElementById('trackOrderId').addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') this.trackOrder();
+                });
+
+                // Order History
+                document.getElementById('refreshOrders').addEventListener('click', () => this.loadOrderHistory());
+            }
+
+            async makeAPICall(params) {
+                try {
+                    const formData = new FormData();
+                    formData.append('key', this.apiKey);
+                    Object.keys(params).forEach(key => {
+                        formData.append(key, params[key]);
+                    });
+
+                    const response = await fetch(this.API_URL, {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    const result = await response.json();
+                    return result;
+                } catch (error) {
+                    console.error('API Error:', error);
+                    this.showNotification('API Error: ' + error.message, 'error');
+                    return null;
+                }
+            }
+
+            showApiKeyModal() {
+                document.getElementById('apiKeyModal').classList.remove('hidden');
+            }
+
+            hideApiKeyModal() {
+                document.getElementById('apiKeyModal').classList.add('hidden');
+            }
+
+            saveApiKey() {
+                const apiKey = document.getElementById('apiKeyInput').value.trim();
+                if (apiKey) {
+                    this.apiKey = apiKey;
+                    localStorage.setItem('smm_api_key', apiKey);
+                    this.hideApiKeyModal();
+                    this.loadBalance();
+                    this.loadServices();
+                    this.showNotification('API Key saved successfully!', 'success');
+                }
+            }
+
+            async loadBalance() {
+                const result = await this.makeAPICall({ action: 'balance' });
+                if (result && result.balance !== undefined) {
+                    document.getElementById('userBalance').textContent = `$${parseFloat(result.balance).toFixed(2)}`;
+                }
+            }
+
+            async loadServices() {
+                const loadButton = document.getElementById('loadServices');
+                const originalText = loadButton.innerHTML;
+                loadButton.innerHTML = '<i class="fas fa-spinner loading mr-2"></i>Loading...';
+
+                const result = await this.makeAPICall({ action: 'services' });
+                
+                if (result && Array.isArray(result)) {
+                    this.services = result;
+                    this.displayServices(result);
+                    this.populateCategories();
+                    this.showNotification(`Loaded ${result.length} services`, 'success');
+                } else {
+                    this.showNotification('Failed to load services', 'error');
+                }
+
+                loadButton.innerHTML = originalText;
+            }
+
+            displayServices(services) {
+                const grid = document.getElementById('servicesGrid');
+                grid.innerHTML = '';
+
+                services.forEach(service => {
+                    const serviceCard = this.createServiceCard(service);
+                    grid.appendChild(serviceCard);
+                });
+            }
+
+            createServiceCard(service) {
+                const card = document.createElement('div');
+                card.className = 'bg-white rounded-lg shadow-lg p-6 card-hover fade-in';
+                
+                const platform = this.detectPlatform(service.name || service.category);
+                const icon = this.getPlatformIcon(platform);
+                
+                card.innerHTML = `
+                    <div class="flex items-center mb-4">
+                        <i class="${icon} text-2xl mr-3"></i>
+                        <div>
+                            <h3 class="font-semibold text-lg">${service.name}</h3>
+                            <p class="text-sm text-gray-600">${service.category}</p>
+                        </div>
+                    </div>
+                    <div class="space-y-2 mb-4">
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Rate:</span>
+                            <span class="font-semibold">$${parseFloat(service.rate).toFixed(4)}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Min:</span>
+                            <span>${service.min}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Max:</span>
+                            <span>${service.max}</span>
+                        </div>
+                    </div>
+                    <div class="flex justify-between items-center mb-4">
+                        ${service.refill ? '<span class="text-green-500 text-sm"><i class="fas fa-check"></i> Refill</span>' : '<span class="text-gray-400 text-sm">No Refill</span>'}
+                        ${service.cancel ? '<span class="text-red-500 text-sm"><i class="fas fa-times"></i> Cancel</span>' : '<span class="text-gray-400 text-sm">No Cancel</span>'}
+                    </div>
+                    <button class="w-full gradient-bg text-white py-2 rounded-lg hover:opacity-90 order-btn" 
+                            data-service='${JSON.stringify(service)}'>
+                        Order Now
+                    </button>
+                `;
+
+                card.querySelector('.order-btn').addEventListener('click', () => this.showOrderModal(service));
+                return card;
+            }
+
+            detectPlatform(text) {
+                const lower = text.toLowerCase();
+                if (lower.includes('instagram') || lower.includes('ig')) return 'instagram';
+                if (lower.includes('tiktok') || lower.includes('tik tok')) return 'tiktok';
+                if (lower.includes('youtube') || lower.includes('yt')) return 'youtube';
+                if (lower.includes('twitter') || lower.includes('tweet')) return 'twitter';
+                if (lower.includes('telegram') || lower.includes('tg')) return 'telegram';
+                if (lower.includes('facebook') || lower.includes('fb')) return 'facebook';
+                return 'other';
+            }
+
+            getPlatformIcon(platform) {
+                const icons = {
+                    instagram: 'fab fa-instagram text-pink-500',
+                    tiktok: 'fab fa-tiktok text-black',
+                    youtube: 'fab fa-youtube text-red-500',
+                    twitter: 'fab fa-twitter text-blue-500',
+                    telegram: 'fab fa-telegram text-blue-400',
+                    facebook: 'fab fa-facebook text-blue-600',
+                    other: 'fas fa-share-alt text-purple-500'
+                };
+                return icons[platform] || icons.other;
+            }
+
+            populateCategories() {
+                const categories = [...new Set(this.services.map(s => s.category))];
+                const select = document.getElementById('categoryFilter');
+                select.innerHTML = '<option value="">All Categories</option>';
+                
+                categories.forEach(category => {
+                    const option = document.createElement('option');
+                    option.value = category;
+                    option.textContent = category;
+                    select.appendChild(option);
+                });
+            }
+
+            filterServices() {
+                const search = document.getElementById('serviceSearch').value.toLowerCase();
+                const category = document.getElementById('categoryFilter').value;
+                
+                let filtered = this.services;
+                
+                if (search) {
+                    filtered = filtered.filter(service => 
+                        service.name.toLowerCase().includes(search) ||
+                        service.category.toLowerCase().includes(search)
+                    );
+                }
+                
+                if (category) {
+                    filtered = filtered.filter(service => service.category === category);
+                }
+                
+                this.displayServices(filtered);
+            }
+
+            filterByPlatform(platform) {
+                if (platform === 'all') {
+                    this.displayServices(this.services);
+                    return;
+                }
+                
+                const filtered = this.services.filter(service => 
+                    this.detectPlatform(service.name + ' ' + service.category) === platform
+                );
+                
+                this.displayServices(filtered);
+            }
+
+            showOrderModal(service) {
+                this.currentService = service;
+                
+                document.getElementById('selectedService').innerHTML = `
+                    <div class="flex items-center">
+                        <i class="${this.getPlatformIcon(this.detectPlatform(service.name))} text-xl mr-3"></i>
+                        <div>
+                            <h4 class="font-semibold">${service.name}</h4>
+                            <p class="text-sm text-gray-600">Rate: $${parseFloat(service.rate).toFixed(4)} per unit</p>
+                        </div>
+                    </div>
+                `;
+                
+                document.getElementById('minQuantity').textContent = service.min;
+                document.getElementById('maxQuantity').textContent = service.max;
+                document.getElementById('orderQuantity').min = service.min;
+                document.getElementById('orderQuantity').max = service.max;
+                document.getElementById('orderQuantity').value = service.min;
+                
+                this.calculateTotal();
+                document.getElementById('orderModal').classList.remove('hidden');
+            }
+
+            hideOrderModal() {
+                document.getElementById('orderModal').classList.add('hidden');
+                document.getElementById('orderForm').reset();
+                this.currentService = null;
+            }
+
+            calculateTotal() {
+                if (!this.currentService) return;
+                
+                const quantity = parseInt(document.getElementById('orderQuantity').value) || 0;
+                const rate = parseFloat(this.currentService.rate);
+                const total = (quantity * rate).toFixed(4);
+                
+                document.getElementById('totalCost').textContent = total;
+            }
+
+            async submitOrder(e) {
+                e.preventDefault();
+                
+                if (!this.currentService) return;
+                
+                const link = document.getElementById('orderLink').value;
+                const quantity = parseInt(document.getElementById('orderQuantity').value);
+                
+                const params = {
+                    action: 'add',
+                    service: this.currentService.service,
+                    link: link,
+                    quantity: quantity
+                };
+                
+                const result = await this.makeAPICall(params);
+                
+                if (result && result.order) {
+                    const order = {
+                        id: result.order,
+                        service: this.currentService.name,
+                        link: link,
+                        quantity: quantity,
+                        rate: this.currentService.rate,
+                        total: (quantity * parseFloat(this.currentService.rate)).toFixed(4),
+                        date: new Date().toISOString(),
+                        status: 'Pending'
+                    };
+                    
+                    this.orders.unshift(order);
+                    localStorage.setItem('smm_orders', JSON.stringify(this.orders));
+                    
+                    this.hideOrderModal();
+                    this.loadOrderHistory();
+                    this.loadBalance();
+                    this.showNotification(`Order placed successfully! Order ID: ${result.order}`, 'success');
+                } else {
+                    this.showNotification('Failed to place order', 'error');
+                }
+            }
+
+            loadOrderHistory() {
+                const container = document.getElementById('orderHistory');
+                
+                if (this.orders.length === 0) {
+                    container.innerHTML = '<p class="text-gray-500 text-center py-8">No orders found</p>';
+                    return;
+                }
+                
+                const table = document.createElement('table');
+                table.className = 'min-w-full divide-y divide-gray-200';
+                
+                table.innerHTML = `
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Order ID</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Service</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quantity</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        ${this.orders.map(order => `
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${order.id}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${order.service}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${order.quantity}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">$${order.total}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${new Date(order.date).toLocaleDateString()}</td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${this.getStatusColor(order.status)}">
+                                        ${order.status}
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                    <button onclick="smmPanel.trackSpecificOrder('${order.id}')" 
+                                            class="text-blue-600 hover:text-blue-900">Track</button>
+                                </td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                `;
+                
+                container.innerHTML = '';
+                container.appendChild(table);
+            }
+
+            getStatusColor(status) {
+                const colors = {
+                    'Pending': 'bg-yellow-100 text-yellow-800',
+                    'In progress': 'bg-blue-100 text-blue-800',
+                    'Completed': 'bg-green-100 text-green-800',
+                    'Partial': 'bg-orange-100 text-orange-800',
+                    'Canceled': 'bg-red-100 text-red-800'
+                };
+                return colors[status] || 'bg-gray-100 text-gray-800';
+            }
+
+            async trackOrder() {
+                const orderId = document.getElementById('trackOrderId').value.trim();
+                if (!orderId) return;
+                
+                await this.trackSpecificOrder(orderId);
+            }
+
+            async trackSpecificOrder(orderId) {
+                const result = await this.makeAPICall({
+                    action: 'status',
+                    order: orderId
+                });
+                
+                if (result && !result.error) {
+                    const statusDiv = document.getElementById('orderStatus');
+                    statusDiv.innerHTML = `
+                        <h3 class="font-semibold mb-3">Order #${orderId} Status</h3>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <span class="text-gray-600">Status:</span>
+                                <span class="ml-2 px-2 py-1 rounded text-sm ${this.getStatusColor(result.status)}">${result.status}</span>
+                            </div>
+                            <div>
+                                <span class="text-gray-600">Charge:</span>
+                                <span class="ml-2 font-semibold">$${parseFloat(result.charge || 0).toFixed(4)}</span>
+                            </div>
+                            <div>
+                                <span class="text-gray-600">Start Count:</span>
+                                <span class="ml-2">${result.start_count || 'N/A'}</span>
+                            </div>
+                            <div>
+                                <span class="text-gray-600">Remains:</span>
+                                <span class="ml-2">${result.remains || 'N/A'}</span>
+                            </div>
+                        </div>
+                    `;
+                    statusDiv.classList.remove('hidden');
+                    
+                    // Update local order status
+                    const orderIndex = this.orders.findIndex(o => o.id == orderId);
+                    if (orderIndex !== -1) {
+                        this.orders[orderIndex].status = result.status;
+                        localStorage.setItem('smm_orders', JSON.stringify(this.orders));
+                        this.loadOrderHistory();
+                    }
+                } else {
+                    this.showNotification('Order not found or error occurred', 'error');
+                }
+            }
+
+            showNotification(message, type = 'info') {
+                const notification = document.createElement('div');
+                notification.className = `fixed top-4 right-4 z-50 px-6 py-3 rounded-lg shadow-lg text-white ${
+                    type === 'success' ? 'bg-green-500' : 
+                    type === 'error' ? 'bg-red-500' : 'bg-blue-500'
+                }`;
+                notification.textContent = message;
+                
+                document.body.appendChild(notification);
+                
+                setTimeout(() => {
+                    notification.remove();
+                }, 5000);
+            }
+        }
+
+        // Initialize the SMM Panel
+        const smmPanel = new SMMPanel();
+    </script>
 </body>
 </html>
