@@ -1,704 +1,890 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SMM Boost - Social Media Marketing Services</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
-    <style>
-        .gradient-bg {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        }
-        .card-hover {
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-        .card-hover:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-        }
-        .service-item {
-            border-left: 4px solid transparent;
-            transition: all 0.3s ease;
-        }
-        .service-item:hover {
-            border-left-color: #667eea;
-            background-color: #f8fafc;
-        }
-        .platform-tab.active {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-        }
-        .loading {
-            display: none;
-        }
-        .loading.show {
-            display: inline-block;
-        }
-    </style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>SonicSwap — Ultra-smooth Token Swaps</title>
+  <meta name="theme-color" content="#0f0f15" />
+
+  <style>
+    :root{
+      --bg:#0b0b10;
+      --card:#12121a;
+      --elev:#171723;
+      --text:#eef0f5;
+      --muted:#9aa3b2;
+      --accent:#7c5cff;
+      --accent-2:#19e3a1;
+      --danger:#ff5470;
+      --warn:#f5c451;
+      --ok:#22c55e;
+      --border:rgba(255,255,255,0.08);
+      --glow:0 0 0 1px rgba(124,92,255,.25), 0 8px 30px rgba(124,92,255,.15);
+      --radius:16px;
+      --fast:160ms cubic-bezier(.2,.8,.2,1);
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      background:
+        radial-gradient(1200px 600px at 20% -10%,rgba(124,92,255,.25),transparent 60%),
+        radial-gradient(1000px 600px at 80% 110%,rgba(25,227,161,.18),transparent 60%),
+        var(--bg);
+      color:var(--text);
+      font:14px/1.4 Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+    }
+
+    .shell{
+      display:flex; flex-direction:column; min-height:100%;
+      max-width:1200px; margin:0 auto; padding:22px 16px 60px;
+    }
+
+    /* Top bar */
+    .top{
+      display:flex; align-items:center; justify-content:space-between;
+      gap:12px; padding:12px; border:1px solid var(--border);
+      background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0)) , var(--card);
+      backdrop-filter: blur(8px);
+      border-radius: 14px;
+    }
+    .brand{display:flex;align-items:center;gap:10px; font-weight:700; letter-spacing:.3px}
+    .logo{
+      width:28px;height:28px;border-radius:8px;
+      background: radial-gradient(110% 110% at 20% 20%, var(--accent), #5327ff 55%, #1b1540);
+      box-shadow: var(--glow);
+    }
+    .top-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+
+    .btn, select, .chip, input, .icon-btn{
+      border:1px solid var(--border); background:var(--elev); color:var(--text);
+      border-radius: 12px; padding:10px 14px; transition: all var(--fast);
+    }
+    .btn{font-weight:600}
+    .btn:hover, select:hover, .chip:hover, .icon-btn:hover{filter: brightness(1.08)}
+    .btn.primary{background: linear-gradient(180deg,#7c5cff, #6046ff); border-color: transparent; box-shadow: var(--glow)}
+    .btn.ghost{background:transparent}
+    .icon-btn{padding:10px; display:inline-flex; align-items:center; justify-content:center}
+
+    /* Layout */
+    .grid{display:grid; grid-template-columns: 1.1fr .9fr; gap:18px; margin-top:18px}
+    @media (max-width: 1024px){ .grid{grid-template-columns:1fr} }
+
+    /* Swap card */
+    .card{
+      background: linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,0)), var(--card);
+      border:1px solid var(--border); border-radius: var(--radius); padding:16px;
+      box-shadow: 0 1px 0 rgba(255,255,255,.02) inset, 0 18px 40px rgba(0,0,0,.25);
+    }
+    .card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+    .title{font-weight:700; letter-spacing:.2px}
+    .sub{color:var(--muted); font-size:12px}
+    .settings{display:flex;align-items:center;gap:8px}
+
+    .panel{
+      border:1px solid var(--border); background: rgba(255,255,255,0.02);
+      border-radius:14px; padding:12px; display:flex; align-items:center; justify-content:space-between; margin-top:10px;
+    }
+    .amount-row{display:flex; align-items:center; gap:10px}
+    .token-btn{
+      display:flex; align-items:center; gap:8px; padding:8px 10px; border-radius:12px; border:1px solid var(--border);
+      background: rgba(255,255,255,0.03); cursor:pointer; user-select:none; transition: all var(--fast);
+    }
+    .token-btn:hover{filter:brightness(1.12)}
+    .token-logo{width:20px;height:20px;border-radius:50%}
+    .amount{flex:1}
+    .amount input{
+      width:100%; background:transparent; border:none; outline:none; color:var(--text);
+      font-size:22px; font-weight:700;
+    }
+    .max{color:var(--accent-2); font-weight:700; cursor:pointer}
+
+    .swap-mid{
+      display:flex; justify-content:center; margin: -10px 0;
+    }
+    .switch{
+      background:var(--elev); border:1px solid var(--border); width:38px;height:38px;border-radius:10px; display:grid;place-items:center;
+      cursor:pointer; transition: transform var(--fast);
+    }
+    .switch:active{transform: rotate(180deg) scale(.98)}
+
+    .info{display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-top:12px}
+    .info-item{background:rgba(255,255,255,.03); border:1px solid var(--border); border-radius:12px; padding:10px}
+    .info-item .k{color:var(--muted); font-size:12px}
+    .info-item .v{font-weight:700}
+
+    .action{margin-top:14px; display:flex; gap:10px}
+    .action .btn{flex:1}
+
+    .price-strip{
+      display:flex; align-items:center; justify-content:space-between; margin-top:10px; color:var(--muted); font-size:12px;
+    }
+    .price-strip .pulse{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--accent-2);box-shadow:0 0 0 0 rgba(25,227,161,.7);animation:pulse 1.8s infinite}
+    @keyframes pulse{to{box-shadow:0 0 0 14px rgba(25,227,161,0)}}
+
+    /* Right column: profile + history */
+    .stack{display:grid; gap:18px}
+    .row{display:flex; align-items:center; justify-content:space-between; gap:10px}
+    .pill{padding:8px 10px; border-radius:999px; background:rgba(255,255,255,.04); border:1px solid var(--border); color:var(--muted)}
+
+    /* Modal */
+    .modal{
+      position:fixed; inset:0; display:none; place-items:center; background: rgba(8,8,12,.55); backdrop-filter: blur(6px); z-index:20;
+    }
+    .modal.open{display:grid}
+    .sheet{
+      width:min(520px, 92vw); background: var(--card); border:1px solid var(--border); border-radius:16px; padding:14px;
+      box-shadow: 0 18px 50px rgba(0,0,0,.5);
+    }
+    .sheet h3{margin:8px 8px 10px}
+    .search{display:flex; gap:8px; margin:8px}
+    .search input{flex:1; background: rgba(255,255,255,.04); border:1px solid var(--border); border-radius:12px; padding:10px 12px; color:var(--text)}
+    .token-list{max-height:360px; overflow:auto; padding:6px}
+    .token-row{
+      display:flex; align-items:center; justify-content:space-between; gap:10px;
+      padding:10px; border-radius:12px; border:1px solid transparent; cursor:pointer; transition: background var(--fast);
+    }
+    .token-row:hover{background:rgba(255,255,255,.04); border-color:var(--border)}
+    .token-meta{display:flex; align-items:center; gap:10px}
+    .tag{font-size:12px; color:var(--muted)}
+    .right{display:flex; gap:8px; align-items:center}
+    .badge{font-size:11px; color:#111; background:linear-gradient(180deg,#aaf0dc,#60d6b9); padding:4px 8px; border-radius:999px}
+
+    /* Toast */
+    .toast{
+      position:fixed; right:16px; bottom:16px; display:grid; gap:8px; z-index:40;
+    }
+    .toast .t{
+      background: var(--elev); border:1px solid var(--border); color:var(--text); padding:10px 12px; border-radius:10px; min-width:240px;
+      box-shadow: 0 10px 30px rgba(0,0,0,.35);
+    }
+
+    a{color:var(--accent-2); text-decoration:none}
+    a:hover{text-decoration:underline}
+    .muted{color:var(--muted)}
+    .warn{color:var(--warn)}
+    .danger{color:var(--danger)}
+    .ok{color:var(--ok)}
+    .mono{font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace}
+  </style>
 </head>
-<body class="bg-gray-50">
-    <!-- Header -->
-    <header class="gradient-bg shadow-lg">
-        <div class="container mx-auto px-4 py-6">
-            <div class="flex items-center justify-between">
-                <div class="flex items-center space-x-3">
-                    <div class="w-12 h-12 bg-white rounded-lg flex items-center justify-center">
-                        <i class="fas fa-rocket text-2xl text-indigo-600"></i>
-                    </div>
-                    <div>
-                        <h1 class="text-2xl font-bold text-white">SMM Boost</h1>
-                        <p class="text-indigo-200 text-sm">Social Media Marketing Panel</p>
-                    </div>
-                </div>
-                <div class="flex items-center space-x-4">
-                    <div class="text-white text-right">
-                        <p class="text-sm text-indigo-200">Balance</p>
-                        <p class="font-bold text-lg">$<span id="balance">0.00</span></p>
-                    </div>
-                    <button class="bg-white text-indigo-600 px-4 py-2 rounded-lg font-semibold hover:bg-indigo-50 transition">
-                        <i class="fas fa-plus mr-2"></i>Add Funds
-                    </button>
-                </div>
-            </div>
+<body>
+  <div class="shell">
+    <header class="top">
+      <div class="brand">
+        <div class="logo"></div>
+        <div>
+          <div>SonicSwap</div>
+          <div class="sub">Ultra-smooth token swaps</div>
         </div>
+      </div>
+      <div class="top-actions">
+        <select id="network" title="Select network">
+          <option value="1">Ethereum</option>
+          <option value="137">Polygon</option>
+          <option value="56">BNB Smart Chain</option>
+          <option value="42161">Arbitrum One</option>
+        </select>
+        <button id="connectBtn" class="btn primary">Connect wallet</button>
+        <button id="profileBtn" class="btn ghost">Profile</button>
+      </div>
     </header>
 
-    <!-- Main Content -->
-    <div class="container mx-auto px-4 py-8">
-        <div class="grid lg:grid-cols-3 gap-8">
-            <!-- Services Panel -->
-            <div class="lg:col-span-2">
-                <div class="bg-white rounded-lg shadow-md overflow-hidden">
-                    <!-- Platform Tabs -->
-                    <div class="bg-gray-50 px-6 py-4 border-b">
-                        <div class="flex flex-wrap gap-2">
-                            <button class="platform-tab active px-4 py-2 rounded-lg font-medium transition" data-platform="tiktok">
-                                <i class="fab fa-tiktok mr-2"></i>TikTok
-                            </button>
-                            <button class="platform-tab px-4 py-2 rounded-lg font-medium transition bg-gray-200 text-gray-700 hover:bg-gray-300" data-platform="youtube">
-                                <i class="fab fa-youtube mr-2"></i>YouTube
-                            </button>
-                            <button class="platform-tab px-4 py-2 rounded-lg font-medium transition bg-gray-200 text-gray-700 hover:bg-gray-300" data-platform="twitter">
-                                <i class="fab fa-twitter mr-2"></i>Twitter
-                            </button>
-                            <button class="platform-tab px-4 py-2 rounded-lg font-medium transition bg-gray-200 text-gray-700 hover:bg-gray-300" data-platform="telegram">
-                                <i class="fab fa-telegram mr-2"></i>Telegram
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Search Bar -->
-                    <div class="p-6 border-b">
-                        <div class="relative">
-                            <input type="text" id="searchServices" placeholder="Search services..." 
-                                   class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
-                            <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-                        </div>
-                    </div>
-
-                    <!-- Services List -->
-                    <div class="max-h-96 overflow-y-auto">
-                        <div id="servicesList">
-                            <!-- TikTok Services -->
-                            <div class="platform-services" data-platform="tiktok">
-                                <div class="service-item p-4 border-b cursor-pointer" data-service-id="2260" data-rate="0.004" data-min="100" data-max="10000">
-                                    <div class="flex justify-between items-center">
-                                        <div>
-                                            <h3 class="font-semibold text-gray-800">TikTok Views</h3>
-                                            <p class="text-sm text-gray-600">High Quality Views - Fast Delivery</p>
-                                            <div class="flex items-center space-x-4 mt-2 text-xs text-gray-500">
-                                                <span><i class="fas fa-clock mr-1"></i>0-1 Hour</span>
-                                                <span><i class="fas fa-chart-line mr-1"></i>Min: 100</span>
-                                                <span><i class="fas fa-chart-line mr-1"></i>Max: 10,000</span>
-                                            </div>
-                                        </div>
-                                        <div class="text-right">
-                                            <div class="text-lg font-bold text-indigo-600">$0.004</div>
-                                            <div class="text-xs text-gray-500">per 1000</div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="service-item p-4 border-b cursor-pointer" data-service-id="9423" data-rate="0.006" data-min="50" data-max="5000">
-                                    <div class="flex justify-between items-center">
-                                        <div>
-                                            <h3 class="font-semibold text-gray-800">TikTok Likes</h3>
-                                            <p class="text-sm text-gray-600">Real Likes - High Quality</p>
-                                            <div class="flex items-center space-x-4 mt-2 text-xs text-gray-500">
-                                                <span><i class="fas fa-clock mr-1"></i>0-2 Hours</span>
-                                                <span><i class="fas fa-chart-line mr-1"></i>Min: 50</span>
-                                                <span><i class="fas fa-chart-line mr-1"></i>Max: 5,000</span>
-                                            </div>
-                                        </div>
-                                        <div class="text-right">
-                                            <div class="text-lg font-bold text-indigo-600">$0.006</div>
-                                            <div class="text-xs text-gray-500">per 1000</div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="service-item p-4 border-b cursor-pointer" data-service-id="" data-rate="0.008" data-min="25" data-max="2000">
-                                    <div class="flex justify-between items-center">
-                                        <div>
-                                            <h3 class="font-semibold text-gray-800">TikTok Followers</h3>
-                                            <p class="text-sm text-gray-600">Premium Followers - Fast Start</p>
-                                            <div class="flex items-center space-x-4 mt-2 text-xs text-gray-500">
-                                                <span><i class="fas fa-clock mr-1"></i>0-6 Hours</span>
-                                                <span><i class="fas fa-chart-line mr-1"></i>Min: 25</span>
-                                                <span><i class="fas fa-chart-line mr-1"></i>Max: 2,000</span>
-                                            </div>
-                                        </div>
-                                        <div class="text-right">
-                                            <div class="text-lg font-bold text-indigo-600">$0.008</div>
-                                            <div class="text-xs text-gray-500">per 1000</div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="service-item p-4 border-b cursor-pointer" data-service-id="" data-rate="0.005" data-min="10" data-max="1000">
-                                    <div class="flex justify-between items-center">
-                                        <div>
-                                            <h3 class="font-semibold text-gray-800">TikTok Shares</h3>
-                                            <p class="text-sm text-gray-600">Real Shares - Instant Start</p>
-                                            <div class="flex items-center space-x-4 mt-2 text-xs text-gray-500">
-                                                <span><i class="fas fa-clock mr-1"></i>Instant</span>
-                                                <span><i class="fas fa-chart-line mr-1"></i>Min: 10</span>
-                                                <span><i class="fas fa-chart-line mr-1"></i>Max: 1,000</span>
-                                            </div>
-                                        </div>
-                                        <div class="text-right">
-                                            <div class="text-lg font-bold text-indigo-600">$0.005</div>
-                                            <div class="text-xs text-gray-500">per 1000</div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- YouTube Services -->
-                            <div class="platform-services hidden" data-platform="youtube">
-                                <div class="service-item p-4 border-b cursor-pointer" data-service-id="" data-rate="0.003" data-min="1000" data-max="100000">
-                                    <div class="flex justify-between items-center">
-                                        <div>
-                                            <h3 class="font-semibold text-gray-800">YouTube Views</h3>
-                                            <p class="text-sm text-gray-600">High Retention Views - Real Users</p>
-                                            <div class="flex items-center space-x-4 mt-2 text-xs text-gray-500">
-                                                <span><i class="fas fa-clock mr-1"></i>0-12 Hours</span>
-                                                <span><i class="fas fa-chart-line mr-1"></i>Min: 1,000</span>
-                                                <span><i class="fas fa-chart-line mr-1"></i>Max: 100,000</span>
-                                            </div>
-                                        </div>
-                                        <div class="text-right">
-                                            <div class="text-lg font-bold text-indigo-600">$0.003</div>
-                                            <div class="text-xs text-gray-500">per 1000</div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="service-item p-4 border-b cursor-pointer" data-service-id="" data-rate="0.025" data-min="50" data-max="5000">
-                                    <div class="flex justify-between items-center">
-                                        <div>
-                                            <h3 class="font-semibold text-gray-800">YouTube Likes</h3>
-                                            <p class="text-sm text-gray-600">Real Likes - High Quality</p>
-                                            <div class="flex items-center space-x-4 mt-2 text-xs text-gray-500">
-                                                <span><i class="fas fa-clock mr-1"></i>0-6 Hours</span>
-                                                <span><i class="fas fa-chart-line mr-1"></i>Min: 50</span>
-                                                <span><i class="fas fa-chart-line mr-1"></i>Max: 5,000</span>
-                                            </div>
-                                        </div>
-                                        <div class="text-right">
-                                            <div class="text-lg font-bold text-indigo-600">$0.025</div>
-                                            <div class="text-xs text-gray-500">per 1000</div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="service-item p-4 border-b cursor-pointer" data-service-id="" data-rate="0.12" data-min="25" data-max="1000">
-                                    <div class="flex justify-between items-center">
-                                        <div>
-                                            <h3 class="font-semibold text-gray-800">YouTube Subscribers</h3>
-                                            <p class="text-sm text-gray-600">Real Subscribers - Lifetime Guarantee</p>
-                                            <div class="flex items-center space-x-4 mt-2 text-xs text-gray-500">
-                                                <span><i class="fas fa-clock mr-1"></i>0-24 Hours</span>
-                                                <span><i class="fas fa-chart-line mr-1"></i>Min: 25</span>
-                                                <span><i class="fas fa-chart-line mr-1"></i>Max: 1,000</span>
-                                            </div>
-                                        </div>
-                                        <div class="text-right">
-                                            <div class="text-lg font-bold text-indigo-600">$0.12</div>
-                                            <div class="text-xs text-gray-500">per 1000</div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Twitter Services -->
-                            <div class="platform-services hidden" data-platform="twitter">
-                                <div class="service-item p-4 border-b cursor-pointer" data-service-id="" data-rate="0.015" data-min="100" data-max="10000">
-                                    <div class="flex justify-between items-center">
-                                        <div>
-                                            <h3 class="font-semibold text-gray-800">Twitter Likes</h3>
-                                            <p class="text-sm text-gray-600">Real Likes - Fast Delivery</p>
-                                            <div class="flex items-center space-x-4 mt-2 text-xs text-gray-500">
-                                                <span><i class="fas fa-clock mr-1"></i>0-1 Hour</span>
-                                                <span><i class="fas fa-chart-line mr-1"></i>Min: 100</span>
-                                                <span><i class="fas fa-chart-line mr-1"></i>Max: 10,000</span>
-                                            </div>
-                                        </div>
-                                        <div class="text-right">
-                                            <div class="text-lg font-bold text-indigo-600">$0.015</div>
-                                            <div class="text-xs text-gray-500">per 1000</div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="service-item p-4 border-b cursor-pointer" data-service-id="" data-rate="0.08" data-min="50" data-max="2000">
-                                    <div class="flex justify-between items-center">
-                                        <div>
-                                            <h3 class="font-semibold text-gray-800">Twitter Followers</h3>
-                                            <p class="text-sm text-gray-600">High Quality Followers - Real Accounts</p>
-                                            <div class="flex items-center space-x-4 mt-2 text-xs text-gray-500">
-                                                <span><i class="fas fa-clock mr-1"></i>0-12 Hours</span>
-                                                <span><i class="fas fa-chart-line mr-1"></i>Min: 50</span>
-                                                <span><i class="fas fa-chart-line mr-1"></i>Max: 2,000</span>
-                                            </div>
-                                        </div>
-                                        <div class="text-right">
-                                            <div class="text-lg font-bold text-indigo-600">$0.08</div>
-                                            <div class="text-xs text-gray-500">per 1000</div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="service-item p-4 border-b cursor-pointer" data-service-id="" data-rate="0.02" data-min="25" data-max="5000">
-                                    <div class="flex justify-between items-center">
-                                        <div>
-                                            <h3 class="font-semibold text-gray-800">Twitter Retweets</h3>
-                                            <p class="text-sm text-gray-600">Real Retweets - Instant Start</p>
-                                            <div class="flex items-center space-x-4 mt-2 text-xs text-gray-500">
-                                                <span><i class="fas fa-clock mr-1"></i>Instant</span>
-                                                <span><i class="fas fa-chart-line mr-1"></i>Min: 25</span>
-                                                <span><i class="fas fa-chart-line mr-1"></i>Max: 5,000</span>
-                                            </div>
-                                        </div>
-                                        <div class="text-right">
-                                            <div class="text-lg font-bold text-indigo-600">$0.02</div>
-                                            <div class="text-xs text-gray-500">per 1000</div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Telegram Services -->
-                            <div class="platform-services hidden" data-platform="telegram">
-                                <div class="service-item p-4 border-b cursor-pointer" data-service-id="" data-rate="0.01" data-min="100" data-max="10000">
-                                    <div class="flex justify-between items-center">
-                                        <div>
-                                            <h3 class="font-semibold text-gray-800">Telegram Members</h3>
-                                            <p class="text-sm text-gray-600">Real Members - High Quality</p>
-                                            <div class="flex items-center space-x-4 mt-2 text-xs text-gray-500">
-                                                <span><i class="fas fa-clock mr-1"></i>0-24 Hours</span>
-                                                <span><i class="fas fa-chart-line mr-1"></i>Min: 100</span>
-                                                <span><i class="fas fa-chart-line mr-1"></i>Max: 10,000</span>
-                                            </div>
-                                        </div>
-                                        <div class="text-right">
-                                            <div class="text-lg font-bold text-indigo-600">$0.01</div>
-                                            <div class="text-xs text-gray-500">per 1000</div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="service-item p-4 border-b cursor-pointer" data-service-id="" data-rate="0.005" data-min="500" data-max="50000">
-                                    <div class="flex justify-between items-center">
-                                        <div>
-                                            <h3 class="font-semibold text-gray-800">Telegram Views</h3>
-                                            <p class="text-sm text-gray-600">Post Views - Fast Delivery</p>
-                                            <div class="flex items-center space-x-4 mt-2 text-xs text-gray-500">
-                                                <span><i class="fas fa-clock mr-1"></i>0-1 Hour</span>
-                                                <span><i class="fas fa-chart-line mr-1"></i>Min: 500</span>
-                                                <span><i class="fas fa-chart-line mr-1"></i>Max: 50,000</span>
-                                            </div>
-                                        </div>
-                                        <div class="text-right">
-                                            <div class="text-lg font-bold text-indigo-600">$0.005</div>
-                                            <div class="text-xs text-gray-500">per 1000</div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Order Panel -->
-            <div class="lg:col-span-1">
-                <div class="bg-white rounded-lg shadow-md p-6 card-hover">
-                    <h2 class="text-xl font-bold text-gray-800 mb-4">
-                        <i class="fas fa-shopping-cart mr-2 text-indigo-600"></i>Place Order
-                    </h2>
-                    
-                    <form id="orderForm">
-                        <div class="space-y-4">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Selected Service</label>
-                                <div id="selectedService" class="p-3 bg-gray-50 rounded-lg text-sm text-gray-600">
-                                    Select a service from the list
-                                </div>
-                            </div>
-
-                            <div>
-                                <label for="link" class="block text-sm font-medium text-gray-700 mb-2">Link</label>
-                                <input type="url" id="link" name="link" required
-                                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                                       placeholder="https://...">
-                            </div>
-
-                            <div>
-                                <label for="quantity" class="block text-sm font-medium text-gray-700 mb-2">Quantity</label>
-                                <input type="number" id="quantity" name="quantity" required min="1"
-                                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                                       placeholder="Enter quantity">
-                                <div id="quantityLimits" class="text-xs text-gray-500 mt-1"></div>
-                            </div>
-
-                            <div class="bg-gray-50 p-4 rounded-lg">
-                                <div class="flex justify-between items-center mb-2">
-                                    <span class="text-sm font-medium text-gray-700">Charge:</span>
-                                    <span id="totalCharge" class="text-lg font-bold text-indigo-600">$0.00</span>
-                                </div>
-                                <div class="text-xs text-gray-500">
-                                    Rate: $<span id="currentRate">0.00</span> per 1000
-                                </div>
-                            </div>
-
-                            <button type="submit" 
-                                    class="w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white py-3 px-4 rounded-lg font-semibold hover:from-indigo-700 hover:to-purple-700 transition disabled:opacity-50 disabled:cursor-not-allowed">
-                                <span class="loading fas fa-spinner fa-spin mr-2"></span>
-                                Submit Order
-                            </button>
-                        </div>
-                    </form>
-                </div>
-
-                <!-- Statistics -->
-                <div class="bg-white rounded-lg shadow-md p-6 mt-6 card-hover">
-                    <h3 class="text-lg font-bold text-gray-800 mb-4">
-                        <i class="fas fa-chart-bar mr-2 text-indigo-600"></i>Statistics
-                    </h3>
-                    <div class="space-y-3">
-                        <div class="flex justify-between items-center">
-                            <span class="text-sm text-gray-600">Total Orders:</span>
-                            <span class="font-semibold">12,453</span>
-                        </div>
-                        <div class="flex justify-between items-center">
-                            <span class="text-sm text-gray-600">Completed:</span>
-                            <span class="font-semibold text-green-600">12,398</span>
-                        </div>
-                        <div class="flex justify-between items-center">
-                            <span class="text-sm text-gray-600">In Progress:</span>
-                            <span class="font-semibold text-blue-600">55</span>
-                        </div>
-                        <div class="flex justify-between items-center">
-                            <span class="text-sm text-gray-600">Success Rate:</span>
-                            <span class="font-semibold text-green-600">99.6%</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
+    <main class="grid">
+      <!-- Swap column -->
+      <section class="card">
+        <div class="card-header">
+          <div class="title">Swap</div>
+          <div class="settings">
+            <span class="pill">Slippage <span id="slipDisplay" class="mono">0.5%</span></span>
+            <button class="icon-btn" id="slipMinus" title="Decrease slippage">−</button>
+            <button class="icon-btn" id="slipPlus" title="Increase slippage">+</button>
+            <button class="icon-btn" id="refreshBtn" title="Refresh prices">⟳</button>
+          </div>
         </div>
+
+        <div class="panel">
+          <div class="amount-row">
+            <button class="token-btn" id="fromTokenBtn">
+              <img class="token-logo" id="fromLogo" alt="from" />
+              <span id="fromSym">ETH</span>
+              <span class="tag" id="fromName">Ethereum</span>
+            </button>
+            <div class="amount">
+              <input id="fromAmount" type="text" inputmode="decimal" placeholder="0.0" />
+              <div class="sub">
+                <span class="muted">Balance:</span> <span id="fromBal" class="mono">—</span>
+                <span class="max" id="maxBtn">MAX</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="swap-mid">
+          <div class="switch" id="switchBtn" title="Switch tokens">⇵</div>
+        </div>
+
+        <div class="panel">
+          <div class="amount-row">
+            <button class="token-btn" id="toTokenBtn">
+              <img class="token-logo" id="toLogo" alt="to" />
+              <span id="toSym">USDC</span>
+              <span class="tag" id="toName">USD Coin</span>
+            </button>
+            <div class="amount">
+              <input id="toAmount" type="text" inputmode="decimal" placeholder="0.0" />
+              <div class="sub">
+                <span class="muted">Est. received</span> • <span id="minRecv" class="mono">—</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="price-strip">
+          <div>
+            <span class="pulse"></span>
+            <span id="pxLine" class="mono">1 ETH ≈ — USDC</span>
+          </div>
+          <div>
+            <span class="muted">Price impact:</span> <span id="priceImpact">—</span>
+          </div>
+        </div>
+
+        <div class="info">
+          <div class="info-item">
+            <div class="k">Network</div>
+            <div class="v"><span id="netLabel">Ethereum</span></div>
+          </div>
+          <div class="info-item">
+            <div class="k">Slippage tolerance</div>
+            <div class="v"><span id="slipInline">0.5%</span></div>
+          </div>
+          <div class="info-item">
+            <div class="k">Fee estimate</div>
+            <div class="v"><span id="feeEst">—</span></div>
+          </div>
+          <div class="info-item">
+            <div class="k">Route</div>
+            <div class="v"><span id="routeHint">Auto</span></div>
+          </div>
+        </div>
+
+        <div class="action">
+          <button id="approveBtn" class="btn">Approve</button>
+          <button id="swapBtn" class="btn primary">Swap</button>
+        </div>
+
+        <div class="sub" style="margin-top:10px">
+          <span class="warn">Note:</span> Swaps are simulated here. Connect an aggregator (Uniswap/1inch/0x) in code to execute real trades.
+        </div>
+      </section>
+
+      <!-- Right column -->
+      <aside class="stack">
+        <section class="card">
+          <div class="row">
+            <div class="title">Profile</div>
+            <span class="pill mono" id="addrPill">Not connected</span>
+          </div>
+          <div style="margin-top:10px">
+            <div class="sub">Wallet</div>
+            <div id="profileWallet" class="mono">—</div>
+            <div class="sub" style="margin-top:10px">Network</div>
+            <div id="profileNet">—</div>
+          </div>
+          <div style="margin-top:12px">
+            <button id="copyAddr" class="btn">Copy address</button>
+            <a id="explorerLink" class="btn ghost" href="#" target="_blank" rel="noreferrer">View on explorer</a>
+          </div>
+        </section>
+
+        <section class="card">
+          <div class="row">
+            <div class="title">History</div>
+            <span class="pill" id="clearHist">Clear</span>
+          </div>
+          <div id="history" style="margin-top:8px; display:grid; gap:10px"></div>
+        </section>
+      </aside>
+    </main>
+  </div>
+
+  <!-- Token selector modal -->
+  <div class="modal" id="tokenModal">
+    <div class="sheet">
+      <h3>Select a token</h3>
+      <div class="search">
+        <input id="tokenSearch" placeholder="Search name or paste address" />
+        <button class="btn" id="closeModal">Close</button>
+      </div>
+      <div class="token-list" id="tokenList"></div>
     </div>
+  </div>
 
-    <!-- Footer -->
-    <footer class="bg-gray-800 text-white py-8 mt-12">
-        <div class="container mx-auto px-4">
-            <div class="grid md:grid-cols-4 gap-8">
-                <div>
-                    <div class="flex items-center space-x-2 mb-4">
-                        <div class="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center">
-                            <i class="fas fa-rocket text-white"></i>
-                        </div>
-                        <h3 class="text-lg font-bold">SMM Boost</h3>
-                    </div>
-                    <p class="text-gray-300 text-sm">The best SMM panel for all your social media marketing needs.</p>
-                </div>
-                <div>
-                    <h4 class="font-semibold mb-3">Services</h4>
-                    <ul class="space-y-2 text-sm text-gray-300">
-                        <li>TikTok Services</li>
-                        <li>YouTube Services</li>
-                        <li>Twitter Services</li>
-                        <li>Telegram Services</li>
-                    </ul>
-                </div>
-                <div>
-                    <h4 class="font-semibold mb-3">Support</h4>
-                    <ul class="space-y-2 text-sm text-gray-300">
-                        <li>FAQ</li>
-                        <li>API Documentation</li>
-                        <li>Contact Support</li>
-                        <li>Terms of Service</li>
-                    </ul>
-                </div>
-                <div>
-                    <h4 class="font-semibold mb-3">Contact</h4>
-                    <ul class="space-y-2 text-sm text-gray-300">
-                        <li><i class="fas fa-envelope mr-2"></i>support@smmboost.com</li>
-                        <li><i class="fas fa-phone mr-2"></i>+1 (555) 123-4567</li>
-                        <li><i class="fas fa-clock mr-2"></i>24/7 Support</li>
-                    </ul>
-                </div>
-            </div>
-            <div class="border-t border-gray-700 mt-8 pt-6 text-center text-sm text-gray-400">
-                <p>&copy; 2024 SMM Boost. All rights reserved.</p>
-            </div>
-        </div>
-    </footer>
+  <div class="toast" id="toast"></div>
 
-    <script>
-        // Global variables
-        let selectedServiceData = null;
-        let userBalance = 0;
+  <script>
+    // -------- Config --------
+    const NETWORKS = {
+      1: {
+        id: 1, hex:'0x1', name:'Ethereum', native:'ETH',
+        explorer:'https://etherscan.io',
+        rpc:['https://rpc.ankr.com/eth','https://cloudflare-eth.com']
+      },
+      137: {
+        id:137, hex:'0x89', name:'Polygon', native:'MATIC',
+        explorer:'https://polygonscan.com',
+        rpc:['https://polygon-rpc.com','https://rpc.ankr.com/polygon']
+      },
+      56: {
+        id:56, hex:'0x38', name:'BNB Smart Chain', native:'BNB',
+        explorer:'https://bscscan.com',
+        rpc:['https://bsc-dataseed1.binance.org','https://rpc.ankr.com/bsc']
+      },
+      42161: {
+        id:42161, hex:'0xa4b1', name:'Arbitrum One', native:'ETH',
+        explorer:'https://arbiscan.io',
+        rpc:['https://arb1.arbitrum.io/rpc','https://rpc.ankr.com/arbitrum']
+      }
+    };
 
-        // Initialize
-        document.addEventListener('DOMContentLoaded', function() {
-            initializePlatformTabs();
-            initializeServiceSelection();
-            initializeOrderForm();
-            initializeSearch();
-            loadBalance();
+    // Minimal token lists per chain (expand as needed)
+    const TOKENS = {
+      1: [
+        t('ETH','Ethereum','native','ethereum','🟣'),
+        t('WETH','Wrapped Ether','0xC02aaa39b223FE8D0A0e5C4F27eAD9083C756Cc2','weth','🟪'),
+        t('USDC','USD Coin','0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48','usd-coin','🔵'),
+        t('USDT','Tether USD','0xdAC17F958D2ee523a2206206994597C13D831ec7','tether','🟢'),
+        t('DAI','Dai','0x6B175474E89094C44Da98b954EedeAC495271d0F','dai','🟡')
+      ],
+      137: [
+        t('MATIC','Polygon','native','polygon-pos','🟣'),
+        t('USDC','USD Coin','0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174','usd-coin','🔵'),
+        t('USDT','Tether USD','0xc2132D05D31c914a87C6611C10748AaCbC5329Ed','tether','🟢'),
+        t('DAI','Dai','0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063','dai','🟡')
+      ],
+      56: [
+        t('BNB','BNB','native','binancecoin','🟡'),
+        t('USDC','USD Coin','0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d','usd-coin','🔵'),
+        t('USDT','Tether USD','0x55d398326f99059fF775485246999027B3197955','tether','🟢'),
+        t('DAI','Dai','0x1AF3F329e8BE154074D8769D1FFa4eE058B1DBc3','dai','🟡')
+      ],
+      42161: [
+        t('ETH','Ether','native','ethereum','🟣'),
+        t('USDC','USD Coin','0xaf88d065e77c8cC2239327C5EDb3A432268e5831','usd-coin','🔵'),
+        t('USDT','Tether USD','0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9','tether','🟢')
+      ]
+    };
+
+    function t(sym,name,addr,cg,emoji){ return {symbol:sym, name, address:addr, cgId:cg, ui:emoji} }
+
+    // -------- State --------
+    let state = {
+      account:null,
+      chainId:1,
+      from: TOKENS[1][0], // ETH
+      to: TOKENS[1][2],   // USDC
+      slip:0.5,
+      prices:{}, // map cgId -> USD
+      balances:{}, // symbol -> amount
+      selecting:'from', // which side is selecting token
+    };
+
+    // -------- Elements --------
+    const $ = s => document.querySelector(s);
+    const $$ = s => document.querySelectorAll(s);
+    const el = {
+      network: $('#network'),
+      connect: $('#connectBtn'),
+      profileBtn: $('#profileBtn'),
+      addrPill: $('#addrPill'),
+      profileWallet: $('#profileWallet'),
+      profileNet: $('#profileNet'),
+      explorer: $('#explorerLink'),
+      copyAddr: $('#copyAddr'),
+      fromBtn: $('#fromTokenBtn'),
+      toBtn: $('#toTokenBtn'),
+      fromLogo: $('#fromLogo'),
+      toLogo: $('#toLogo'),
+      fromSym: $('#fromSym'),
+      toSym: $('#toSym'),
+      fromName: $('#fromName'),
+      toName: $('#toName'),
+      fromAmt: $('#fromAmount'),
+      toAmt: $('#toAmount'),
+      maxBtn: $('#maxBtn'),
+      switchBtn: $('#switchBtn'),
+      pxLine: $('#pxLine'),
+      priceImpact: $('#priceImpact'),
+      feeEst: $('#feeEst'),
+      routeHint: $('#routeHint'),
+      minRecv: $('#minRecv'),
+      netLabel: $('#netLabel'),
+      slipDisplay: $('#slipDisplay'),
+      slipInline: $('#slipInline'),
+      slipPlus: $('#slipPlus'),
+      slipMinus: $('#slipMinus'),
+      approveBtn: $('#approveBtn'),
+      swapBtn: $('#swapBtn'),
+      refreshBtn: $('#refreshBtn'),
+      history: $('#history'),
+      clearHist: $('#clearHist'),
+      modal: $('#tokenModal'),
+      tokenList: $('#tokenList'),
+      tokenSearch: $('#tokenSearch'),
+      closeModal: $('#closeModal'),
+      toast: $('#toast'),
+      fromBal: $('#fromBal'),
+    };
+
+    // -------- Init --------
+    init();
+    async function init(){
+      hydrateUI();
+      bindEvents();
+      updateTokenButtons();
+      loadPrices(); // initial price load
+      setInterval(loadPrices, 20000); // auto refresh
+      loadHistory();
+      tryAutoWallet();
+    }
+
+    function hydrateUI(){
+      el.network.value = String(state.chainId);
+      el.netLabel.textContent = NETWORKS[state.chainId].name;
+      el.profileNet.textContent = NETWORKS[state.chainId].name;
+      el.slipDisplay.textContent = `${state.slip}%`;
+      el.slipInline.textContent = `${state.slip}%`;
+      renderTokenModal(); // prepare modal list
+    }
+
+    function bindEvents(){
+      el.network.addEventListener('change', onNetworkChange);
+      el.connect.addEventListener('click', connectWallet);
+      el.profileBtn.addEventListener('click', () => toast('Profiles are local-only in this demo.'));
+      el.copyAddr.addEventListener('click', copyAddress);
+      el.fromBtn.addEventListener('click', () => openTokenModal('from'));
+      el.toBtn.addEventListener('click', () => openTokenModal('to'));
+      el.switchBtn.addEventListener('click', switchSides);
+      el.fromAmt.addEventListener('input', handleFromInput);
+      el.toAmt.addEventListener('input', handleToInput);
+      el.maxBtn.addEventListener('click', setMax);
+      el.slipPlus.addEventListener('click', () => adjustSlippage(+0.1));
+      el.slipMinus.addEventListener('click', () => adjustSlippage(-0.1));
+      el.approveBtn.addEventListener('click', onApprove);
+      el.swapBtn.addEventListener('click', onSwap);
+      el.refreshBtn.addEventListener('click', loadPrices);
+      el.clearHist.addEventListener('click', clearHistory);
+      el.closeModal.addEventListener('click', closeModal);
+      el.tokenSearch.addEventListener('input', renderTokenModal);
+
+      // MetaMask events
+      if(window.ethereum){
+        window.ethereum.on?.('accountsChanged', accounts => {
+          state.account = accounts[0] || null;
+          reflectAccount();
+          refreshBalances();
         });
+        window.ethereum.on?.('chainChanged', hex => {
+          const id = parseInt(hex,16);
+          state.chainId = id;
+          el.network.value = String(id);
+          onNetworkChangedInternal();
+        });
+      }
+    }
 
-        // Platform tab functionality
-        function initializePlatformTabs() {
-            const tabs = document.querySelectorAll('.platform-tab');
-            const services = document.querySelectorAll('.platform-services');
+    // -------- Wallet --------
+    async function tryAutoWallet(){
+      if(!window.ethereum) return;
+      const accts = await window.ethereum.request({ method:'eth_accounts' });
+      if(accts?.length){
+        state.account = accts[0];
+        reflectAccount();
+        refreshBalances();
+      }
+    }
 
-            tabs.forEach(tab => {
-                tab.addEventListener('click', function() {
-                    const platform = this.dataset.platform;
-                    
-                    // Update active tab
-                    tabs.forEach(t => {
-                        t.classList.remove('active');
-                        t.classList.add('bg-gray-200', 'text-gray-700', 'hover:bg-gray-300');
-                    });
-                    this.classList.add('active');
-                    this.classList.remove('bg-gray-200', 'text-gray-700', 'hover:bg-gray-300');
+    async function connectWallet(){
+      if(!window.ethereum){
+        toast('No wallet detected. Install MetaMask.', 'warn');
+        return;
+      }
+      try{
+        const accts = await window.ethereum.request({ method:'eth_requestAccounts' });
+        state.account = accts[0];
+        reflectAccount();
+        const desired = NETWORKS[state.chainId];
+        await ensureNetwork(desired);
+        refreshBalances();
+      }catch(e){
+        toast('Wallet connection failed', 'danger');
+        console.error(e);
+      }
+    }
 
-                    // Show/hide services
-                    services.forEach(service => {
-                        if (service.dataset.platform === platform) {
-                            service.classList.remove('hidden');
-                        } else {
-                            service.classList.add('hidden');
-                        }
-                    });
+    async function ensureNetwork(net){
+      // Attempt switch, then add if needed
+      try{
+        await window.ethereum.request({ method:'wallet_switchEthereumChain', params:[{ chainId: net.hex }]});
+      }catch(err){
+        if(err?.code === 4902){
+          try{
+            await window.ethereum.request({ method:'wallet_addEthereumChain', params:[{
+              chainId: net.hex, chainName: net.name,
+              nativeCurrency: { name: net.native, symbol: net.native, decimals: 18 },
+              rpcUrls: net.rpc, blockExplorerUrls:[net.explorer]
+            }]});
+          }catch(e){ throw e; }
+        }else{ throw err; }
+      }
+    }
 
-                    // Clear selection
-                    clearServiceSelection();
-                });
-            });
+    function reflectAccount(){
+      const addr = state.account;
+      el.addrPill.textContent = addr ? short(addr) : 'Not connected';
+      el.profileWallet.textContent = addr || '—';
+      el.explorer.href = addr ? `${NETWORKS[state.chainId].explorer}/address/${addr}` : '#';
+      el.connect.textContent = addr ? short(addr) : 'Connect wallet';
+    }
+
+    // -------- Network / Token handling --------
+    async function onNetworkChange(e){
+      const id = parseInt(e.target.value,10);
+      state.chainId = id;
+      el.netLabel.textContent = NETWORKS[id].name;
+      el.profileNet.textContent = NETWORKS[id].name;
+      state.from = TOKENS[id][0];
+      state.to = TOKENS[id][1] ?? TOKENS[id][0];
+      updateTokenButtons();
+      renderTokenModal();
+      loadPrices();
+      if(state.account && window.ethereum){
+        try{
+          await ensureNetwork(NETWORKS[id]);
+        }catch(e){
+          toast('Switch network in your wallet to proceed', 'warn');
         }
+      }
+      refreshBalances();
+    }
 
-        // Service selection functionality
-        function initializeServiceSelection() {
-            const serviceItems = document.querySelectorAll('.service-item');
-            
-            serviceItems.forEach(item => {
-                item.addEventListener('click', function() {
-                    // Remove previous selection
-                    serviceItems.forEach(si => si.classList.remove('bg-indigo-50', 'border-indigo-200'));
-                    
-                    // Add selection styling
-                    this.classList.add('bg-indigo-50', 'border-indigo-200');
-                    
-                    // Store service data
-                    selectedServiceData = {
-                        id: this.dataset.serviceId,
-                        name: this.querySelector('h3').textContent,
-                        rate: parseFloat(this.dataset.rate),
-                        min: parseInt(this.dataset.min),
-                        max: parseInt(this.dataset.max)
-                    };
-                    
-                    updateSelectedService();
-                });
-            });
+    function onNetworkChangedInternal(){
+      el.netLabel.textContent = NETWORKS[state.chainId].name;
+      el.profileNet.textContent = NETWORKS[state.chainId].name;
+      updateTokenButtons();
+      renderTokenModal();
+      loadPrices();
+      refreshBalances();
+    }
+
+    function openTokenModal(side){
+      state.selecting = side;
+      el.modal.classList.add('open');
+      el.tokenSearch.value = '';
+      renderTokenModal();
+    }
+    function closeModal(){
+      el.modal.classList.remove('open');
+    }
+
+    function renderTokenModal(){
+      const list = TOKENS[state.chainId] || [];
+      const q = el.tokenSearch.value.trim().toLowerCase();
+      const items = list.filter(tk=>{
+        if(!q) return true;
+        return tk.symbol.toLowerCase().includes(q) || tk.name.toLowerCase().includes(q) || (tk.address!=='native' && tk.address.toLowerCase()===q);
+      });
+      el.tokenList.innerHTML = items.map(tk=>{
+        const bal = state.balances[tk.symbol] ?? '—';
+        return `
+          <div class="token-row" data-sym="${tk.symbol}">
+            <div class="token-meta">
+              <div class="token-logo" style="background:#222; display:grid; place-items:center; font-size:14px">${tk.ui}</div>
+              <div>
+                <div><strong>${tk.symbol}</strong> <span class="tag">${tk.name}</span></div>
+                <div class="muted mono">${tk.address==='native' ? 'Native' : short(tk.address)}</div>
+              </div>
+            </div>
+            <div class="right">
+              <span class="badge">${bal}</span>
+            </div>
+          </div>
+        `;
+      }).join('');
+      $$('#tokenList .token-row').forEach(row=>{
+        row.addEventListener('click', ()=>{
+          const sym = row.getAttribute('data-sym');
+          const chosen = (TOKENS[state.chainId]||[]).find(x=>x.symbol===sym);
+          if(state.selecting==='from') state.from = chosen;
+          else state.to = chosen;
+          if(state.from.symbol === state.to.symbol){
+            // Prevent same token selection
+            const alt = (TOKENS[state.chainId]||[]).find(x=>x.symbol!==chosen.symbol);
+            if(state.selecting==='from') state.to = alt || state.to;
+            else state.from = alt || state.from;
+          }
+          updateTokenButtons();
+          closeModal();
+          recalcFrom();
+        });
+      });
+    }
+
+    function updateTokenButtons(){
+      el.fromSym.textContent = state.from.symbol;
+      el.toSym.textContent = state.to.symbol;
+      el.fromName.textContent = state.from.name;
+      el.toName.textContent = state.to.name;
+      // Simple colored dots as logos
+      el.fromLogo.src = genDataPill(state.from.ui);
+      el.toLogo.src = genDataPill(state.to.ui);
+      el.routeHint.textContent = 'Auto';
+    }
+
+    function switchSides(){
+      const tmp = state.from;
+      state.from = state.to;
+      state.to = tmp;
+      updateTokenButtons();
+      const val = el.toAmt.value;
+      el.toAmt.value = el.fromAmt.value;
+      el.fromAmt.value = val;
+      recalcFrom();
+    }
+
+    // -------- Pricing / Quotes --------
+    async function loadPrices(){
+      // Fetch USD prices from Coingecko for currently visible tokens on this network
+      const ids = new Set();
+      (TOKENS[state.chainId]||[]).forEach(t => t.cgId && ids.add(t.cgId));
+      if(!ids.size) return;
+
+      try{
+        const url = `https://api.coingecko.com/api/v3/simple/price?ids=${[...ids].join(',')}&vs_currencies=usd`;
+        const res = await fetch(url, { cache:'no-store' });
+        const data = await res.json();
+        const map = {};
+        for(const [k,v] of Object.entries(data)){ map[k] = v.usd; }
+        state.prices = map;
+        recalcFrom();
+        toast('Prices updated', 'ok', 1400, true);
+      }catch(e){
+        console.warn(e);
+        toast('Price refresh failed', 'warn');
+      }
+    }
+
+    function handleFromInput(){
+      // Tight debounce for super-smooth feel
+      if(handleFromInput._t) cancelAnimationFrame(handleFromInput._t);
+      handleFromInput._t = requestAnimationFrame(recalcFrom);
+    }
+    function handleToInput(){
+      if(handleToInput._t) cancelAnimationFrame(handleToInput._t);
+      handleToInput._t = requestAnimationFrame(recalcTo);
+    }
+
+    function recalcFrom(){
+      const a = num(el.fromAmt.value);
+      const pFrom = state.prices[state.from.cgId] || 0;
+      const pTo = state.prices[state.to.cgId] || 0;
+      let out = 0;
+      if(a>0 && pFrom>0 && pTo>0){
+        // Simple USD ratio, includes a tiny 0.10% mock impact
+        const rate = (pFrom/pTo);
+        const impact = Math.min(0.001 + a*0.00002, 0.01); // mock impact up to 1%
+        out = a * rate * (1 - impact);
+        el.priceImpact.textContent = (impact*100).toFixed(2) + '%';
+      }else{
+        el.priceImpact.textContent = '—';
+      }
+      el.toAmt.value = out ? trim(out) : '';
+      el.minRecv.textContent = out ? trim(out * (1 - state.slip/100)) + ' ' + state.to.symbol : '—';
+
+      if(pFrom>0 && pTo>0){
+        el.pxLine.textContent = `1 ${state.from.symbol} ≈ ${trim(pFrom/pTo)} ${state.to.symbol}`;
+      }else{
+        el.pxLine.textContent = `1 ${state.from.symbol} ≈ — ${state.to.symbol}`;
+      }
+      el.feeEst.textContent = feeHint();
+    }
+
+    function recalcTo(){
+      const b = num(el.toAmt.value);
+      const pFrom = state.prices[state.from.cgId] || 0;
+      const pTo = state.prices[state.to.cgId] || 0;
+      let inp = 0;
+      if(b>0 && pFrom>0 && pTo>0){
+        const rate = (pTo/pFrom);
+        const impact = Math.min(0.001 + b*0.00002, 0.01);
+        inp = b * rate * (1 + impact);
+        el.priceImpact.textContent = (impact*100).toFixed(2) + '%';
+      }else{
+        el.priceImpact.textContent = '—';
+      }
+      el.fromAmt.value = inp ? trim(inp) : '';
+      el.minRecv.textContent = b ? trim(b * (1 - state.slip/100)) + ' ' + state.to.symbol : '—';
+
+      if(pFrom>0 && pTo>0){
+        el.pxLine.textContent = `1 ${state.from.symbol} ≈ ${trim(pFrom/pTo)} ${state.to.symbol}`;
+      }else{
+        el.pxLine.textContent = `1 ${state.from.symbol} ≈ — ${state.to.symbol}`;
+      }
+      el.feeEst.textContent = feeHint();
+    }
+
+    function feeHint(){
+      const base = {1:'$4–$12',137:'$0.02–$0.2',56:'$0.05–$0.3',42161:'$0.05–$0.5'}[state.chainId] || '—';
+      return base;
+    }
+
+    // -------- Slippage --------
+    function adjustSlippage(delta){
+      let s = Math.max(0, Math.min(5, +(state.slip + delta).toFixed(2)));
+      if(s<0.1 && s>0) s = 0.1; // avoid dust
+      state.slip = s;
+      el.slipDisplay.textContent = `${s}%`;
+      el.slipInline.textContent = `${s}%`;
+      recalcFrom();
+    }
+
+    // -------- Balances (mock + native via RPC if desired) --------
+    async function refreshBalances(){
+      // For demo, show mock balances and zero when not connected
+      const connected = !!state.account;
+      const list = TOKENS[state.chainId] || [];
+      const balMap = {};
+      list.forEach(tk => {
+        if(!connected){ balMap[tk.symbol] = '—'; }
+        else{
+          // Simple deterministic mock based on address hash
+          const seed = hashStr(state.account + tk.symbol + state.chainId) % 1000;
+          const val = (seed / 10).toFixed(4);
+          balMap[tk.symbol] = val;
         }
+      });
+      state.balances = balMap;
+      el.fromBal.textContent = balMap[state.from.symbol] || '—';
+      renderTokenModal();
+    }
 
-        // Update selected service display
-        function updateSelectedService() {
-            const selectedServiceDiv = document.getElementById('selectedService');
-            const quantityLimits = document.getElementById('quantityLimits');
-            const currentRate = document.getElementById('currentRate');
-            const quantityInput = document.getElementById('quantity');
-            
-            if (selectedServiceData) {
-                selectedServiceDiv.innerHTML = `
-                    <div class="font-medium text-gray-800">${selectedServiceData.name}</div>
-                    <div class="text-xs text-gray-500 mt-1">Service ID: ${selectedServiceData.id || 'N/A'}</div>
-                `;
-                
-                quantityLimits.textContent = `Min: ${selectedServiceData.min.toLocaleString()} | Max: ${selectedServiceData.max.toLocaleString()}`;
-                currentRate.textContent = selectedServiceData.rate.toFixed(6);
-                
-                quantityInput.min = selectedServiceData.min;
-                quantityInput.max = selectedServiceData.max;
-                quantityInput.placeholder = `${selectedServiceData.min} - ${selectedServiceData.max.toLocaleString()}`;
-                
-                calculateTotal();
-            }
-        }
+    function setMax(){
+      const bal = parseFloat(state.balances[state.from.symbol] || '0');
+      if(bal>0){
+        el.fromAmt.value = String(bal);
+        recalcFrom();
+      }
+    }
 
-        // Calculate total charge
-        function calculateTotal() {
-            const quantityInput = document.getElementById('quantity');
-            const totalCharge = document.getElementById('totalCharge');
-            
-            if (selectedServiceData && quantityInput.value) {
-                const quantity = parseInt(quantityInput.value);
-                const total = (quantity / 1000) * selectedServiceData.rate;
-                totalCharge.textContent = `$${total.toFixed(6)}`;
-            } else {
-                totalCharge.textContent = '$0.00';
-            }
-        }
+    // -------- Approve & Swap (stubs) --------
+    async function onApprove(){
+      if(!state.account) return toast('Connect your wallet', 'warn');
+      // In production:
+      // - Detect if "from" is ERC-20 (address !== 'native')
+      // - Call token.approve(spender, amount) using ethers.js
+      toast(`Approval simulated for ${state.from.symbol}. Integrate ethers + router.`, 'ok');
+    }
 
-        // Initialize order form
-        function initializeOrderForm() {
-            const quantityInput = document.getElementById('quantity');
-            const orderForm = document.getElementById('orderForm');
-            
-            quantityInput.addEventListener('input', calculateTotal);
-            
-            orderForm.addEventListener('submit', function(e) {
-                e.preventDefault();
-                submitOrder();
-            });
-        }
+    async function onSwap(){
+      if(!state.account) return toast('Connect your wallet', 'warn');
+      const amtIn = num(el.fromAmt.value);
+      const amtOut = num(el.toAmt.value);
+      if(!(amtIn>0 && amtOut>0)) return toast('Enter valid amounts', 'warn');
 
-        // Submit order
-        async function submitOrder() {
-            if (!selectedServiceData) {
-                alert('Please select a service first.');
-                return;
-            }
+      // In production:
+      // - Request quote from aggregator (0x/1inch/Uniswap)
+      // - Validate minReceived with slippage
+      // - Execute transaction via wallet
+      // Here we simulate success instantly.
+      toast(`Swapped ${trim(amtIn)} ${state.from.symbol} → ${trim(amtOut)} ${state.to.symbol}`, 'ok');
+      pushHistory({
+        ts: Date.now(),
+        chainId: state.chainId,
+        fromSym: state.from.symbol,
+        toSym: state.to.symbol,
+        in: trim(amtIn),
+        out: trim(amtOut),
+        slip: state.slip
+      });
+      // Reset for nice UX
+      el.fromAmt.value = '';
+      el.toAmt.value = '';
+      el.minRecv.textContent = '—';
+    }
 
-            const link = document.getElementById('link').value;
-            const quantity = parseInt(document.getElementById('quantity').value);
-            const loading = document.querySelector('.loading');
-            const submitBtn = document.querySelector('button[type="submit"]');
+    // -------- History --------
+    function loadHistory(){
+      try{
+        const raw = localStorage.getItem('sonic_history') || '[]';
+        renderHistory(JSON.parse(raw));
+      }catch{ renderHistory([]) }
+    }
+    function pushHistory(item){
+      const arr = getHistory();
+      arr.unshift(item);
+      localStorage.setItem('sonic_history', JSON.stringify(arr.slice(0,50)));
+      renderHistory(arr.slice(0,50));
+    }
+    function getHistory(){
+      try{ return JSON.parse(localStorage.getItem('sonic_history')||'[]'); }catch{ return [] }
+    }
+    function clearHistory(){
+      localStorage.removeItem('sonic_history');
+      renderHistory([]);
+    }
+    function renderHistory(items){
+      if(!items.length){
+        el.history.innerHTML = `<div class="muted">No swaps yet</div>`;
+        return;
+      }
+      el.history.innerHTML = items.map(h=>{
+        const net = NETWORKS[h.chainId]?.name || h.chainId;
+        const dt = new Date(h.ts);
+        const when = dt.toLocaleString();
+        return `
+          <div class="panel">
+            <div>
+              <div><strong>${h.in} ${h.fromSym}</strong> → <strong>${h.out} ${h.toSym}</strong></div>
+              <div class="muted">Slippage ${h.slip}% • ${net}</div>
+            </div>
+            <div class="muted">${when}</div>
+          </div>
+        `;
+      }).join('');
+    }
 
-            // Validate inputs
-            if (!link || !quantity) {
-                alert('Please fill in all required fields.');
-                return;
-            }
+    // -------- Utilities --------
+    function short(addr){ return addr ? addr.slice(0,6) + '…' + addr.slice(-4) : '' }
+    function num(x){ const v = parseFloat(String(x).replace(/,/g,'')); return Number.isFinite(v) ? v : 0; }
+    function trim(n){ return Number(n).toLocaleString(undefined,{maximumFractionDigits:6}) }
+    function hashStr(s){ let h=0; for(let i=0;i<s.length;i++){ h=((h<<5)-h)+s.charCodeAt(i); h|=0 } return Math.abs(h) }
 
-            if (quantity < selectedServiceData.min || quantity > selectedServiceData.max) {
-                alert(`Quantity must be between ${selectedServiceData.min} and ${selectedServiceData.max}.`);
-                return;
-            }
+    function toast(msg, type='info', ttl=2200, silent=false){
+      const div = document.createElement('div');
+      div.className = 't';
+      const color = type==='ok'?'#22c55e': type==='warn'?'#f5c451': type==='danger'?'#ff5470': '#9aa3b2';
+      div.style.borderColor = 'rgba(255,255,255,0.08)';
+      div.innerHTML = `<span style="color:${color}">●</span> ${msg}`;
+      el.toast.appendChild(div);
+      if(!silent) console.log('[toast]', msg);
+      setTimeout(()=>{ div.style.opacity='0'; div.style.transform='translateY(4px)'; }, ttl-200);
+      setTimeout(()=> div.remove(), ttl);
+    }
 
-            // Calculate total cost
-            const totalCost = (quantity / 1000) * selectedServiceData.rate;
-            
-            if (totalCost > userBalance) {
-                alert('Insufficient balance. Please add funds to your account.');
-                return;
-            }
+    function genDataPill(emoji){
+      const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='40' height='40'><rect rx='20' width='40' height='40' fill='#1d1d2a'/><text x='50%' y='56%' dominant-baseline='middle' text-anchor='middle' font-size='20'>${emoji}</text></svg>`;
+      return 'data:image/svg+xml;utf8,' + encodeURIComponent(svg);
+    }
 
-            // Show loading
-            loading.classList.add('show');
-            submitBtn.disabled = true;
+    // -------- Keyboard niceties --------
+    document.addEventListener('keydown', (e)=>{
+      if(e.key==='Escape') closeModal();
+      if((e.metaKey||e.ctrlKey) && e.key.toLowerCase()==='i') adjustSlippage(+0.1);
+      if((e.metaKey||e.ctrlKey) && e.key.toLowerCase()==='k') adjustSlippage(-0.1);
+    });
 
-            try {
-                const response = await fetch('/api/add-order', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        service: selectedServiceData.id,
-                        link: link,
-                        quantity: quantity
-                    })
-                });
-
-                const result = await response.json();
-                
-                if (result.order) {
-                    alert(`Order placed successfully! Order ID: ${result.order}`);
-                    // Reset form
-                    document.getElementById('orderForm').reset();
-                    clearServiceSelection();
-                    loadBalance(); // Refresh balance
-                } else {
-                    alert('Error placing order: ' + (result.error || 'Unknown error'));
-                }
-            } catch (error) {
-                alert('Network error. Please try again.');
-                console.error('Order submission error:', error);
-            } finally {
-                loading.classList.remove('show');
-                submitBtn.disabled = false;
-            }
-        }
-
-        // Clear service selection
-        function clearServiceSelection() {
-            selectedServiceData = null;
-            document.querySelectorAll('.service-item').forEach(item => {
-                item.classList.remove('bg-indigo-50', 'border-indigo-200');
-            });
-            document.getElementById('selectedService').innerHTML = 'Select a service from the list';
-            document.getElementById('quantityLimits').textContent = '';
-            document.getElementById('currentRate').textContent = '0.00';
-            document.getElementById('totalCharge').textContent = '$0.00';
-        }
-
-        // Search functionality
-        function initializeSearch() {
-            const searchInput = document.getElementById('searchServices');
-            
-            searchInput.addEventListener('input', function() {
-                const searchTerm = this.value.toLowerCase();
-                const serviceItems = document.querySelectorAll('.service-item');
-                
-                serviceItems.forEach(item => {
-                    const serviceName = item.querySelector('h3').textContent.toLowerCase();
-                    const serviceDesc = item.querySelector('p').textContent.toLowerCase();
-                    
-                    if (serviceName.includes(searchTerm) || serviceDesc.includes(searchTerm)) {
-                        item.style.display = 'block';
-                    } else {
-                        item.style.display = 'none';
-                    }
-                });
-            });
-        }
-
-        // Load user balance
-        async function loadBalance() {
-            try {
-                const response = await fetch('/api/check-api');
-                const data = await response.json();
-                
-                if (data.balance !== undefined) {
-                    userBalance = parseFloat(data.balance);
-                    document.getElementById('balance').textContent = userBalance.toFixed(2);
-                } else {
-                    console.error('Error loading balance:', data);
-                }
-            } catch (error) {
-                console.error('Network error loading balance:', error);
-            }
-        }
-
-        // Auto-refresh balance every 30 seconds
-        setInterval(loadBalance, 30000);
-    </script>
+  </script>
 </body>
 </html>
