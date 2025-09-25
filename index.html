@@ -3,95 +3,219 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Crypto Token Swap DEX</title>
-    <link href="styles.css" rel="stylesheet"> 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-</head>
-<body class="bg-gray-900 text-white min-h-screen">
-    <header class="p-4 border-b border-gray-700 flex justify-between items-center">
-        <h1 class="text-2xl font-bold text-indigo-400">DEX Swap</h1>
-        <nav>
-            <button id="nav-history" class="p-2 mx-2 hover:text-indigo-400">History</button>
-            <button id="nav-profile" class="p-2 mx-2 hover:text-indigo-400">Profile</button>
-            <select id="network-select" class="bg-gray-700 p-2 rounded hover:bg-gray-600">
-                <option value="eth">Ethereum</option>
-                <option value="bsc">BNB Chain</option>
-                <option value="poly">Polygon</option>
-            </select>
-            <button id="connect-wallet-btn" class="ml-4 px-4 py-2 bg-indigo-600 rounded-full hover:bg-indigo-700 transition duration-300">
-                Connect Wallet
-            </button>
-        </nav>
-    </header>
+    <title>Super Smooth Crypto Swap DEX</title>
 
-    <main class="container mx-auto p-4 flex flex-col lg:flex-row gap-8 mt-4">
-        
-        <section id="swap-widget" class="lg:w-1/3 bg-gray-800 p-6 rounded-xl shadow-2xl">
-            <h2 class="text-xl font-semibold mb-6">Token Swap</h2>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom CSS for super smooth effects */
+        .swap-card { transition: all 0.3s ease-in-out; }
+        .swap-card:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2); }
+        .token-input { background: transparent; border: none; outline: none; }
+    </style>
 
-            <div class="mb-4 p-4 bg-gray-700 rounded-lg">
-                <p class="text-sm text-gray-400">You Pay</p>
-                <div class="flex justify-between items-center mt-1">
-                    <input type="number" placeholder="0.0" class="w-2/3 text-3xl font-bold bg-transparent focus:outline-none" id="token-amount-in">
-                    <button class="token-select-btn bg-indigo-500 hover:bg-indigo-600 px-4 py-2 rounded-full flex items-center" data-token-role="in">
-                        <span id="token-in-symbol">ETH</span> 
-                        <i class="fas fa-chevron-down ml-2 text-sm"></i>
-                    </button>
-                </div>
-                <p id="token-in-balance" class="text-xs text-gray-400 mt-2">Balance: 0.00</p>
-            </div>
-
-            <div class="flex justify-center -my-3 z-10">
-                <button id="swap-direction-btn" class="p-2 bg-gray-900 border-4 border-gray-800 rounded-full text-indigo-400 hover:text-white hover:bg-gray-700 transition duration-150">
-                    <i class="fas fa-arrow-down"></i>
-                </button>
-            </div>
-
-            <div class="mb-6 p-4 bg-gray-700 rounded-lg mt-0">
-                <p class="text-sm text-gray-400">You Receive</p>
-                <div class="flex justify-between items-center mt-1">
-                    <input type="text" placeholder="0.0" readonly class="w-2/3 text-3xl font-bold bg-transparent focus:outline-none text-gray-300" id="token-amount-out">
-                    <button class="token-select-btn bg-gray-600 hover:bg-gray-500 px-4 py-2 rounded-full flex items-center" data-token-role="out">
-                        <span id="token-out-symbol">Select Token</span> 
-                        <i class="fas fa-chevron-down ml-2 text-sm"></i>
-                    </button>
-                </div>
-            </div>
-
-            <div id="swap-details" class="text-sm space-y-2 mb-6">
-                <p><strong>Price:</strong> <span id="swap-price">1 ETH = 3000 USDC</span></p>
-                <p><strong>Slippage Tolerance:</strong> 
-                    <span id="slippage-value" class="text-indigo-400">0.5%</span> 
-                    <button class="text-xs ml-2 text-gray-500 hover:text-indigo-400">Edit</button>
-                </p>
-                <p><strong>Network Fee (Gas):</strong> <span id="network-fee">$X.XX</span> (Provider: <span id="fee-provider">Aggregator</span>)</p>
-            </div>
-
-            <button id="execute-swap-btn" disabled class="w-full py-4 text-lg font-bold rounded-xl bg-gray-600 text-gray-300 transition duration-300 disabled:opacity-50">
-                Connect Wallet to Swap
-            </button>
-        </section>
-
-        <section id="chart-info-section" class="lg:w-2/3">
-            <div class="bg-gray-800 p-6 rounded-xl shadow-2xl mb-6">
-                <h2 class="text-xl font-semibold mb-4">Live Price Chart (Token A/Token B)</h2>
-                <div id="live-chart" style="height: 300px;">
-                    </div>
-            </div>
-
-            <div id="token-info" class="bg-gray-800 p-6 rounded-xl shadow-2xl">
-                <h2 class="text-xl font-semibold mb-4">Token Information (CoinGecko)</h2>
-                <p id="token-description" class="text-gray-400"></p>
-                </div>
-        </section>
-    </main>
-    
-    <div id="modal-container">
-        </div>
+    <script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
 
     <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@walletconnect/web3-provider@1.8.0/dist/umd/index.min.js"></script>
-    <script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
-    <script src="app.js"></script>
+
+</head>
+<body class="bg-gray-900 text-white min-h-screen font-sans">
+
+    <header class="p-4 border-b border-gray-700 sticky top-0 bg-gray-900 z-10">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-3xl font-extrabold text-indigo-400">⚡️ DEX Swap</h1>
+            <nav class="flex items-center space-x-4">
+                
+                <div class="relative">
+                    <select id="network-select" class="bg-gray-700 text-white p-2 rounded-lg hover:bg-gray-600 transition duration-150 cursor-pointer">
+                        <option value="eth">Ethereum</option>
+                        <option value="poly">Polygon (Selected Network)</option>
+                        <option value="bsc">BNB Smart Chain</option>
+                        <option value="arb">Arbitrum</option>
+                    </select>
+                </div>
+
+                <button id="profile-btn" class="text-gray-300 hover:text-indigo-400 px-3 py-2 transition duration-150">Profile / History</button>
+
+                <button id="connect-wallet-btn" class="px-5 py-2 bg-indigo-600 rounded-full font-semibold hover:bg-indigo-700 transition duration-300 shadow-lg">
+                    Connect Wallet
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container mx-auto p-4 flex flex-col lg:flex-row gap-8 mt-8">
+        
+        <section class="lg:w-1/3">
+            <div id="swap-card" class="swap-card bg-gray-800 p-6 rounded-3xl shadow-2xl border border-gray-700">
+                <h2 class="text-2xl font-bold mb-6 text-center">Execute Swap</h2>
+
+                <div class="mb-4 p-4 bg-gray-700 rounded-xl">
+                    <p class="text-sm text-gray-400">You Pay</p>
+                    <div class="flex justify-between items-center mt-1">
+                        <input type="text" value="1.0" class="token-input w-2/3 text-4xl font-extrabold text-white" id="token-amount-in">
+                        <button class="px-4 py-2 bg-indigo-500 hover:bg-indigo-600 rounded-full flex items-center font-semibold transition duration-150" onclick="showTokenSearchModal('in')">
+                            <img src="https://cryptologos.cc/logos/wrapped-ether-weth-logo.png?v=025" alt="WETH" class="w-6 h-6 mr-2">
+                            WETH <span class="ml-2 text-sm">▼</span>
+                        </button>
+                    </div>
+                    <p class="text-xs text-gray-400 mt-2" id="token-in-balance">Balance: 4.567 WETH</p>
+                </div>
+
+                <div class="flex justify-center -my-4 z-10 relative">
+                    <button class="p-3 bg-gray-900 border-4 border-gray-800 rounded-full text-indigo-400 hover:text-white hover:bg-gray-700 transition duration-150">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path></svg>
+                    </button>
+                </div>
+
+                <div class="mb-6 p-4 bg-gray-700 rounded-xl mt-0">
+                    <p class="text-sm text-gray-400">You Receive</p>
+                    <div class="flex justify-between items-center mt-1">
+                        <input type="text" value="3045.78" readonly class="token-input w-2/3 text-4xl font-extrabold text-gray-300" id="token-amount-out">
+                        <button class="px-4 py-2 bg-gray-600 hover:bg-gray-500 rounded-full flex items-center font-semibold transition duration-150" onclick="showTokenSearchModal('out')">
+                            <img src="https://cryptologos.cc/logos/usd-coin-usdc-logo.png?v=025" alt="USDC" class="w-6 h-6 mr-2">
+                            USDC <span class="ml-2 text-sm">▼</span>
+                        </button>
+                    </div>
+                    <p class="text-xs text-gray-400 mt-2" id="token-out-price">~$3,045.78 USD</p>
+                </div>
+
+                <div id="swap-details" class="text-sm space-y-2 p-3 bg-gray-700 rounded-lg mb-6">
+                    <div class="flex justify-between">
+                        <span class="text-gray-400">Price Impact:</span>
+                        <span class="text-green-400 font-medium">0.05%</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-400">Slippage Tolerance:</span>
+                        <span id="slippage-value" class="text-yellow-400 font-medium">0.5%</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-400">Network Fee (Gas):</span>
+                        <span id="network-fee">$3.50 (Provider: Aggregator)</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-400">Best Rate Via:</span>
+                        <span id="aggregator-provider" class="text-indigo-400 font-medium">1inch</span>
+                    </div>
+                </div>
+
+                <button id="swap-action-btn" class="w-full py-4 text-xl font-bold rounded-2xl bg-indigo-600 hover:bg-indigo-700 transition duration-300 disabled:opacity-50">
+                    Execute Swap (1 WETH for 3045.78 USDC)
+                </button>
+            </div>
+        </section>
+
+        <section class="lg:w-2/3 space-y-8">
+            
+            <div class="bg-gray-800 p-4 rounded-3xl shadow-2xl border border-gray-700">
+                <h2 class="text-xl font-semibold mb-4 text-indigo-300">Live Price Chart (WETH/USDC)</h2>
+                <div id="chart-container" style="height: 350px;">
+                    <p class="text-center text-gray-500 pt-16" id="chart-placeholder">
+                        Fetching live data from public CoinGecko Price Chart API...
+                    </p>
+                </div>
+            </div>
+
+            <div class="bg-gray-800 p-6 rounded-3xl shadow-2xl border border-gray-700">
+                <h2 class="text-xl font-semibold mb-4 text-indigo-300">User Profile & Transaction History</h2>
+                <div class="space-y-3">
+                    <p class="text-sm text-gray-400">Wallet Address: <span class="text-white font-mono">0x...</span></p>
+                    <p class="text-sm text-gray-400">Total Swaps: <span class="text-white">5</span></p>
+                    
+                    <h3 class="font-bold text-lg pt-2 text-gray-300">Recent Transactions:</h3>
+                    <ul id="history-list" class="space-y-2 text-sm max-h-40 overflow-y-auto pr-2">
+                        <li class="flex justify-between p-2 bg-gray-700 rounded-lg">
+                            <span>Swap 0.5 ETH for 1500 USDC</span>
+                            <span class="text-green-400">Confirmed (Tx: 0x...a1b2)</span>
+                        </li>
+                        <li class="flex justify-between p-2 bg-gray-700 rounded-lg">
+                            <span>Swap 1200 DAI for 1 BNB</span>
+                            <span class="text-green-400">Confirmed (Tx: 0x...c3d4)</span>
+                        </li>
+                        <li class="flex justify-between p-2 bg-gray-700 rounded-lg">
+                            <span>Approve USDT</span>
+                            <span class="text-green-400">Confirmed (Tx: 0x...e5f6)</span>
+                        </li>
+                        </ul>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <div id="token-search-modal" class="hidden fixed inset-0 bg-black bg-opacity-75 z-20 flex items-center justify-center">
+        <div class="bg-gray-800 p-6 rounded-xl w-full max-w-md border border-indigo-500">
+            <h3 class="text-xl font-semibold mb-4">Select Token</h3>
+            <input type="text" placeholder="Search by name, symbol, or paste contract address" class="w-full p-3 mb-4 bg-gray-700 rounded-lg text-white token-input">
+            
+            <div id="token-list" class="h-64 overflow-y-auto space-y-2">
+                <div class="p-2 bg-gray-700 rounded-lg hover:bg-gray-600 cursor-pointer flex items-center">
+                    <img src="https://cryptologos.cc/logos/tether-usdt-logo.png?v=025" alt="USDT" class="w-6 h-6 mr-3">
+                    <span class="font-medium">USDT</span>
+                    <span class="text-xs text-gray-400 ml-auto">0xdAC... (ERC-20)</span>
+                </div>
+                <div class="p-2 bg-gray-700 rounded-lg hover:bg-gray-600 cursor-pointer flex items-center">
+                    <img src="https://cryptologos.cc/logos/dai-dai-logo.png?v=025" alt="DAI" class="w-6 h-6 mr-3">
+                    <span class="font-medium">DAI</span>
+                    <span class="text-xs text-gray-400 ml-auto">0x6B1... (ERC-20)</span>
+                </div>
+                </div>
+            <button onclick="document.getElementById('token-search-modal').classList.add('hidden')" class="w-full mt-4 py-2 bg-indigo-600 rounded-lg">Close</button>
+        </div>
+    </div>
+
+    <script>
+        // Placeholder function for Wallet Connect (Requires Web3.js/WalletConnect SDK)
+        document.getElementById('connect-wallet-btn').onclick = function() {
+            alert("Connecting Wallet...\n(In a real app, this uses WalletConnect/Web3Modal to initiate a secure connection and fetch the user's address.)");
+            this.textContent = '0xAbC...dEf';
+            this.classList.remove('bg-indigo-600');
+            this.classList.add('bg-green-600');
+            document.getElementById('swap-action-btn').disabled = false;
+            document.getElementById('swap-action-btn').textContent = 'Execute Swap...';
+        };
+
+        // Placeholder function for Token Search Modal
+        function showTokenSearchModal(role) {
+            document.getElementById('token-search-modal').classList.remove('hidden');
+            // In a real app, this function would handle fetching token lists and validating contract input.
+        }
+
+        // Placeholder function for Live Chart (CoinGecko API)
+        document.addEventListener('DOMContentLoaded', () => {
+            const chartContainer = document.getElementById('chart-container');
+            
+            // 1. Hide the placeholder text
+            document.getElementById('chart-placeholder').style.display = 'none';
+
+            // 2. Initialize Lightweight Chart (Mock Data)
+            const chart = LightweightCharts.create(chartContainer, {
+                width: chartContainer.clientWidth,
+                height: 350,
+                layout: { backgroundColor: '#1f2937', textColor: '#d1d5db' },
+                grid: { vertLines: { color: '#374151' }, horzLines: { color: '#374151' } },
+                crosshair: { mode: LightweightCharts.CrosshairMode.Normal },
+                rightPriceScale: { borderColor: '#4b5563' },
+                timeScale: { borderColor: '#4b5563' }
+            });
+
+            const series = chart.addAreaSeries({ lineColor: '#6366f1', topColor: 'rgba(99, 102, 241, 0.5)', bottomColor: 'rgba(99, 102, 241, 0.04)' });
+
+            // Mock CoinGecko data structure (time, price)
+            const mockData = [
+                { time: '2025-09-20', value: 2900 },
+                { time: '2025-09-21', value: 2950 },
+                { time: '2025-09-22', value: 3000 },
+                { time: '2025-09-23', value: 3020 },
+                { time: '2025-09-24', value: 3045 }, // Current price
+                { time: '2025-09-25', value: 3030 },
+            ];
+
+            series.setData(mockData);
+            chart.timeScale().fitContent();
+
+            // Note: In a real app, this data would be fetched from the 
+            // CoinGecko API endpoint: /coins/{id}/market_chart
+        });
+    </script>
 </body>
 </html>
