@@ -3,303 +3,95 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GeminiSwap - The Ultimate Token Swap</title>
-
-    <script src="https://cdn.tailwindcss.com"></script>
-    
-    <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
-
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    
-    <style>
-        /* A simple font and smooth transitions for a better UI feel */
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
-        body {
-            background-color: #0f172a; /* Slate 900 */
-            color: #f8fafc; /* Slate 50 */
-            font-family: 'Inter', sans-serif;
-        }
-        .glass-card {
-            background: rgba(30, 41, 59, 0.6);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(51, 65, 85, 0.5);
-            border-radius: 1.5rem;
-            transition: all 0.2s ease-in-out;
-        }
-        .btn-primary {
-            transition: all 0.2s ease-in-out;
-        }
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 20px rgba(99, 102, 241, 0.5);
-        }
-    </style>
+    <title>Crypto Token Swap DEX</title>
+    <link href="styles.css" rel="stylesheet"> 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
-<body class="antialiased">
-    <div class="container mx-auto p-4 max-w-7xl">
-        <header class="flex justify-between items-center py-4">
-            <h1 class="text-3xl font-bold text-indigo-400">GeminiSwap 💎</h1>
-            <div class="flex items-center space-x-4">
-                <button id="select-network-btn" class="bg-slate-700/80 px-4 py-2 rounded-xl font-semibold hover:bg-slate-600/80 transition-colors">
-                    <span id="network-name">Ethereum</span>
+<body class="bg-gray-900 text-white min-h-screen">
+    <header class="p-4 border-b border-gray-700 flex justify-between items-center">
+        <h1 class="text-2xl font-bold text-indigo-400">DEX Swap</h1>
+        <nav>
+            <button id="nav-history" class="p-2 mx-2 hover:text-indigo-400">History</button>
+            <button id="nav-profile" class="p-2 mx-2 hover:text-indigo-400">Profile</button>
+            <select id="network-select" class="bg-gray-700 p-2 rounded hover:bg-gray-600">
+                <option value="eth">Ethereum</option>
+                <option value="bsc">BNB Chain</option>
+                <option value="poly">Polygon</option>
+            </select>
+            <button id="connect-wallet-btn" class="ml-4 px-4 py-2 bg-indigo-600 rounded-full hover:bg-indigo-700 transition duration-300">
+                Connect Wallet
+            </button>
+        </nav>
+    </header>
+
+    <main class="container mx-auto p-4 flex flex-col lg:flex-row gap-8 mt-4">
+        
+        <section id="swap-widget" class="lg:w-1/3 bg-gray-800 p-6 rounded-xl shadow-2xl">
+            <h2 class="text-xl font-semibold mb-6">Token Swap</h2>
+
+            <div class="mb-4 p-4 bg-gray-700 rounded-lg">
+                <p class="text-sm text-gray-400">You Pay</p>
+                <div class="flex justify-between items-center mt-1">
+                    <input type="number" placeholder="0.0" class="w-2/3 text-3xl font-bold bg-transparent focus:outline-none" id="token-amount-in">
+                    <button class="token-select-btn bg-indigo-500 hover:bg-indigo-600 px-4 py-2 rounded-full flex items-center" data-token-role="in">
+                        <span id="token-in-symbol">ETH</span> 
+                        <i class="fas fa-chevron-down ml-2 text-sm"></i>
+                    </button>
+                </div>
+                <p id="token-in-balance" class="text-xs text-gray-400 mt-2">Balance: 0.00</p>
+            </div>
+
+            <div class="flex justify-center -my-3 z-10">
+                <button id="swap-direction-btn" class="p-2 bg-gray-900 border-4 border-gray-800 rounded-full text-indigo-400 hover:text-white hover:bg-gray-700 transition duration-150">
+                    <i class="fas fa-arrow-down"></i>
                 </button>
-                <button id="connect-wallet-btn" class="bg-indigo-600 px-4 py-2 rounded-xl font-bold btn-primary">Connect Wallet</button>
-                <div id="user-profile" class="hidden items-center space-x-3 bg-slate-700/80 pl-4 pr-2 py-1.5 rounded-xl">
-                    <span id="wallet-address" class="text-sm font-mono"></span>
-                    <button id="disconnect-btn" class="text-red-400 hover:text-red-300 text-sm font-bold">X</button>
-                </div>
             </div>
-        </header>
 
-        <main class="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-8">
-            <div class="lg:col-span-1">
-                <div class="glass-card p-6">
-                    <div class="flex justify-between items-center mb-4">
-                        <h2 class="text-xl font-bold">Swap</h2>
-                        <button class="text-slate-400 hover:text-white">⚙️</button> </div>
-                    <div class="bg-slate-900/70 p-4 rounded-xl mb-1 relative">
-                        <label class="text-xs text-slate-400">From</label>
-                        <div class="flex justify-between items-end mt-1">
-                            <input id="from-amount" type="number" placeholder="0.0" class="bg-transparent text-3xl w-full focus:outline-none appearance-none">
-                            <button class="flex items-center bg-slate-800 p-2 rounded-xl font-semibold hover:bg-slate-700 min-w-[120px] justify-between">
-                                <img src="https://assets.coingecko.com/coins/images/279/small/ethereum.png" class="w-6 h-6 rounded-full" alt="ETH icon">
-                                <span class="ml-2">ETH</span> 
-                                <span class="ml-1">▼</span>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="flex justify-center my-2">
-                        <button class="bg-slate-700 p-2 rounded-full hover:bg-slate-600 rotate-90 transition-transform">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
-                              <path fill-rule="evenodd" d="M1 11.5a.5.5 0 0 0 .5.5h11.793l-3.147 3.146a.5.5 0 0 0 .708.708l4-4a.5.5 0 0 0 0-.708l-4-4a.5.5 0 0 0-.708.708L13.293 11H1.5a.5.5 0 0 0-.5.5zm14-7a.5.5 0 0 1-.5.5H2.707l3.147 3.146a.5.5 0 1 1-.708.708l-4-4a.5.5 0 0 1 0-.708l4-4a.5.5 0 1 1 .708.708L2.707 4H14.5a.5.5 0 0 1 .5.5z"/>
-                            </svg>
-                        </button>
-                    </div>
-                    <div class="bg-slate-900/70 p-4 rounded-xl">
-                        <label class="text-xs text-slate-400">To</label>
-                        <div class="flex justify-between items-end mt-1">
-                            <input id="to-amount" type="number" placeholder="0.0" class="bg-transparent text-3xl w-full focus:outline-none appearance-none" readonly>
-                            <button class="flex items-center bg-indigo-600 p-2 rounded-xl font-semibold hover:bg-indigo-500 min-w-[120px] justify-between">
-                                <span class="ml-2">Select</span> 
-                                <span class="ml-1">▼</span>
-                            </button>
-                        </div>
-                    </div>
-                    <div id="swap-details" class="text-sm text-slate-400 mt-4 space-y-2 hidden">
-                        <div class="flex justify-between"><span>Price</span><span id="price-info">1 ETH = 2,950 USDC</span></div>
-                        <div class="flex justify-between"><span>Slippage</span><span>0.5%</span></div>
-                        <div class="flex justify-between"><span>Network Fee</span><span id="network-fee">~$1.25</span></div>
-                    </div>
-                    <button id="swap-btn" class="w-full bg-indigo-600 mt-6 py-4 rounded-2xl text-xl font-bold btn-primary disabled:bg-slate-700 disabled:cursor-not-allowed disabled:shadow-none" disabled>Connect Wallet</button>
+            <div class="mb-6 p-4 bg-gray-700 rounded-lg mt-0">
+                <p class="text-sm text-gray-400">You Receive</p>
+                <div class="flex justify-between items-center mt-1">
+                    <input type="text" placeholder="0.0" readonly class="w-2/3 text-3xl font-bold bg-transparent focus:outline-none text-gray-300" id="token-amount-out">
+                    <button class="token-select-btn bg-gray-600 hover:bg-gray-500 px-4 py-2 rounded-full flex items-center" data-token-role="out">
+                        <span id="token-out-symbol">Select Token</span> 
+                        <i class="fas fa-chevron-down ml-2 text-sm"></i>
+                    </button>
                 </div>
             </div>
 
-            <div class="lg:col-span-2">
-                <div class="glass-card p-6 mb-8">
-                    <div id="chart-info" class="flex items-center mb-4">
-                        <img id="chart-token-icon" src="https://assets.coingecko.com/coins/images/279/large/ethereum.png" class="w-8 h-8 mr-3" alt="token icon">
-                        <div>
-                            <h3 id="chart-token-name" class="text-xl font-bold">Ethereum (ETH)</h3>
-                            <p id="chart-token-price" class="text-2xl font-semibold text-green-400">$2,980.50</p>
-                        </div>
-                    </div>
-                    <canvas id="priceChart"></canvas>
-                </div>
-                <div class="glass-card p-6">
-                    <h3 class="text-lg font-bold mb-4">Recent Transactions</h3>
-                    <div id="tx-history-list" class="space-y-3">
-                        <p class="text-slate-500">Connect wallet to view transaction history.</p>
-                    </div>
-                </div>
+            <div id="swap-details" class="text-sm space-y-2 mb-6">
+                <p><strong>Price:</strong> <span id="swap-price">1 ETH = 3000 USDC</span></p>
+                <p><strong>Slippage Tolerance:</strong> 
+                    <span id="slippage-value" class="text-indigo-400">0.5%</span> 
+                    <button class="text-xs ml-2 text-gray-500 hover:text-indigo-400">Edit</button>
+                </p>
+                <p><strong>Network Fee (Gas):</strong> <span id="network-fee">$X.XX</span> (Provider: <span id="fee-provider">Aggregator</span>)</p>
             </div>
-        </main>
-    </div>
 
-<script>
-document.addEventListener('DOMContentLoaded', () => {
+            <button id="execute-swap-btn" disabled class="w-full py-4 text-lg font-bold rounded-xl bg-gray-600 text-gray-300 transition duration-300 disabled:opacity-50">
+                Connect Wallet to Swap
+            </button>
+        </section>
 
-    // --- STATE MANAGEMENT ---
-    let provider;
-    let signer;
-    let userAddress;
-    let priceChart;
+        <section id="chart-info-section" class="lg:w-2/3">
+            <div class="bg-gray-800 p-6 rounded-xl shadow-2xl mb-6">
+                <h2 class="text-xl font-semibold mb-4">Live Price Chart (Token A/Token B)</h2>
+                <div id="live-chart" style="height: 300px;">
+                    </div>
+            </div>
 
-    // --- UI ELEMENTS ---
-    const connectWalletBtn = document.getElementById('connect-wallet-btn');
-    const disconnectBtn = document.getElementById('disconnect-btn');
-    const userProfileDiv = document.getElementById('user-profile');
-    const walletAddressSpan = document.getElementById('wallet-address');
-    const swapBtn = document.getElementById('swap-btn');
-    const txHistoryList = document.getElementById('tx-history-list');
-    const fromAmountInput = document.getElementById('from-amount');
-    const toAmountInput = document.getElementById('to-amount');
-    const swapDetailsDiv = document.getElementById('swap-details');
-    
-    // --- WEB3 & WALLET FUNCTIONS ---
-
-    // Function to connect wallet
-    const connectWallet = async () => {
-        if (typeof window.ethereum !== 'undefined') {
-            try {
-                // Use Ethers.js to wrap the browser provider
-                provider = new ethers.providers.Web3Provider(window.ethereum);
-                // Request account access
-                await provider.send("eth_requestAccounts", []);
-                signer = provider.getSigner();
-                userAddress = await signer.getAddress();
-                
-                updateUIForConnectedState(userAddress);
-                fetchTransactionHistory(userAddress);
-
-            } catch (error) {
-                console.error("User rejected connection:", error);
-                alert("Connection failed. Please try again.");
-            }
-        } else {
-            alert('Please install a wallet like MetaMask!');
-        }
-    };
-
-    // Function to disconnect wallet
-    const disconnectWallet = () => {
-        provider = null;
-        signer = null;
-        userAddress = null;
-        updateUIForDisconnectedState();
-    };
-
-    // --- UI UPDATE FUNCTIONS ---
-
-    // Update UI when wallet is connected
-    const updateUIForConnectedState = (address) => {
-        connectWalletBtn.classList.add('hidden');
-        userProfileDiv.classList.remove('hidden');
-        walletAddressSpan.textContent = `${address.substring(0, 6)}...${address.substring(address.length - 4)}`;
-        swapBtn.textContent = 'Swap';
-        swapBtn.disabled = false;
-    };
-    
-    // Update UI when wallet is disconnected
-    const updateUIForDisconnectedState = () => {
-        connectWalletBtn.classList.remove('hidden');
-        userProfileDiv.classList.add('hidden');
-        walletAddressSpan.textContent = '';
-        swapBtn.textContent = 'Connect Wallet';
-        swapBtn.disabled = true;
-        txHistoryList.innerHTML = '<p class="text-slate-500">Connect wallet to view transaction history.</p>';
-        fromAmountInput.value = '';
-        toAmountInput.value = '';
-        swapDetailsDiv.classList.add('hidden');
-    };
-
-    // --- API & DATA FUNCTIONS ---
-
-    // Function to fetch price chart data from CoinGecko API
-    const fetchAndDisplayChart = async (tokenId = 'ethereum', vsCurrency = 'usd', days = '1') => {
-        try {
-            const apiUrl = `https://api.coingecko.com/api/v3/coins/${tokenId}/market_chart?vs_currency=${vsCurrency}&days=${days}`;
-            const response = await fetch(apiUrl);
-            if (!response.ok) throw new Error('Network response was not ok');
-            const data = await response.json();
-            
-            const prices = data.prices;
-            const chartLabels = prices.map(p => new Date(p[0]).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
-            const chartData = prices.map(p => p[1]);
-            
-            // Update token price info
-            const currentPrice = chartData[chartData.length - 1];
-            document.getElementById('chart-token-price').textContent = `$${currentPrice.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-
-            // Create or update chart
-            const ctx = document.getElementById('priceChart').getContext('2d');
-            if(priceChart) {
-                priceChart.destroy();
-            }
-            priceChart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: chartLabels,
-                    datasets: [{
-                        label: `Price (${vsCurrency.toUpperCase()})`,
-                        data: chartData,
-                        borderColor: chartData[0] <= currentPrice ? 'rgb(52, 211, 153)' : 'rgb(248, 113, 113)',
-                        backgroundColor: 'rgba(52, 211, 153, 0.1)',
-                        fill: true,
-                        tension: 0.4,
-                        pointRadius: 0,
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    scales: {
-                        x: { display: false },
-                        y: { display: false }
-                    },
-                    plugins: {
-                        legend: { display: false }
-                    }
-                }
-            });
-        } catch (error) {
-            console.error("Failed to fetch chart data:", error);
-            document.getElementById('priceChart').textContent = "Could not load chart data.";
-        }
-    };
-    
-    // MOCK Function to simulate getting swap quotes
-    const getSwapQuote = () => {
-        const amount = parseFloat(fromAmountInput.value);
-        if (isNaN(amount) || amount <= 0) {
-            toAmountInput.value = '';
-            swapDetailsDiv.classList.add('hidden');
-            return;
-        }
-        
-        // Mock price rate and calculation
-        const mockRate = 2950.75; // 1 ETH = 2950.75 USDC
-        const outputAmount = amount * mockRate;
-        toAmountInput.value = outputAmount.toFixed(4);
-        swapDetailsDiv.classList.remove('hidden');
-    };
-
-    // MOCK Function to display transaction history
-    const fetchTransactionHistory = (address) => {
-        txHistoryList.innerHTML = ''; // Clear existing list
-        const mockHistory = [
-            { type: 'Swap', from: '0.5 ETH', to: '1475 USDC', status: '✅ Completed' },
-            { type: 'Swap', from: '100 USDT', to: '0.033 ETH', status: '✅ Completed' },
-            { type: 'Approval', token: 'USDC', status: '✅ Completed' }
-        ];
-        
-        if (mockHistory.length === 0) {
-             txHistoryList.innerHTML = '<p class="text-slate-500">No recent transactions found.</p>';
-             return;
-        }
-
-        mockHistory.forEach(tx => {
-            const txElement = document.createElement('div');
-            txElement.className = 'flex justify-between items-center bg-slate-800/50 p-3 rounded-lg';
-            txElement.innerHTML = `
-                <div>
-                    <p class="font-semibold">${tx.type === 'Swap' ? `Swap ${tx.from} for ${tx.to}` : `${tx.type} ${tx.token}`}</p>
-                    <p class="text-xs text-slate-400">${new Date().toLocaleDateString()}</p>
+            <div id="token-info" class="bg-gray-800 p-6 rounded-xl shadow-2xl">
+                <h2 class="text-xl font-semibold mb-4">Token Information (CoinGecko)</h2>
+                <p id="token-description" class="text-gray-400"></p>
                 </div>
-                <span class="text-sm font-semibold text-green-400">${tx.status}</span>
-            `;
-            txHistoryList.appendChild(txElement);
-        });
-    };
+        </section>
+    </main>
+    
+    <div id="modal-container">
+        </div>
 
-
-    // --- EVENT LISTENERS ---
-    connectWalletBtn.addEventListener('click', connectWallet);
-    disconnectBtn.addEventListener('click', disconnectWallet);
-    fromAmountInput.addEventListener('input', getSwapQuote);
-
-    // --- INITIALIZATION ---
-    fetchAndDisplayChart('ethereum'); // Load Ethereum chart by default
-});
-</script>
-
+    <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@walletconnect/web3-provider@1.8.0/dist/umd/index.min.js"></script>
+    <script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
+    <script src="app.js"></script>
 </body>
 </html>
