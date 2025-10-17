@@ -1,80 +1,62 @@
-// Get HTML elements
-const connectButton = document.getElementById('connectButton');
-const walletAddressDisplay = document.getElementById('walletAddress');
-const profileSection = document.getElementById('profile');
-const connectSection = document.getElementById('connect-section');
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TON Payment Wallet Connect</title>
+    
+    <script type="module" src="https://unpkg.com/@web3modal/ethers/dist/ethers.js?v=1.1"></script>
 
-// --- Web3Modal Configuration ---
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; background-color: #1a1b1e; color: white; }
+        .container { width: 90%; max-width: 500px; text-align: center; }
+        header { display: flex; justify-content: space-between; align-items: center; padding: 1.5rem; border-bottom: 1px solid #333; margin-bottom: 3rem; }
+        h1 { font-size: 1.5rem; margin: 0; }
+        #profile { display: none; background-color: #2c2c34; padding: 2rem; border-radius: 12px; box-shadow: 0 8px 16px rgba(0,0,0,0.3); }
+        .profile-item { margin-bottom: 1rem; }
+        .profile-item strong { display: block; color: #aaa; margin-bottom: 0.5rem; }
+        .address-box { font-family: monospace; word-break: break-all; background-color: #1a1b1e; padding: 0.8rem; border-radius: 8px; border: 1px solid #444; }
+        #welcomeMessage { text-align: center; }
+        #status-message { color: #ffc107; font-family: monospace; padding: 10px; border: 1px dashed #ffc107; border-radius: 5px; margin-bottom: 2rem; }
+    </style>
+</head>
+<body>
 
-const Web3Modal = window.Web3Modal.default;
-const WalletConnectProvider = window.WalletConnectProvider.default;
+    <div class="container">
+        <header>
+            <h1>My dApp</h1>
+            <w3m-button></w3m-button>
+        </header>
 
-let web3ModalInstance;
-let provider;
+        <main>
+            <p id="status-message">Loading script...</p>
+            <div id="welcomeMessage">
+                <h2>Connect your wallet</h2>
+                <p>Please connect your wallet to see your profile information.</p>
+            </div>
+        </main>
+    </div>
 
-// Function to initialize Web3Modal
-function init() {
-    // Define provider options
-    const providerOptions = {
-        walletconnect: {
-            package: WalletConnectProvider,
-            options: {
-                // You must get your own Project ID from https://cloud.walletconnect.com
-                // This is a public ID and is rate-limited.
-                infuraId: "27e484d29432424f944369d7b4b9b5f4",
-            }
-        }
-    };
-
-    web3ModalInstance = new Web3Modal({
-        cacheProvider: false, // Optional: Set to true to remember the last used provider
-        providerOptions, // Required
-        disableInjectedProvider: false, // Optional: Hides MetaMask if true
-    });
-}
-
-// Function to handle wallet connection
-async function connectWallet() {
-    try {
-        const providerInstance = await web3ModalInstance.connect();
-        const ethersProvider = new ethers.providers.Web3Provider(providerInstance);
-        const signer = ethersProvider.getSigner();
-        const address = await signer.getAddress();
+    <script type="module">
+        const statusMessage = document.getElementById('status-message');
         
-        updateUI(address);
-
-        // --- Subscribe to wallet events ---
-        providerInstance.on("accountsChanged", (accounts) => {
-            if (accounts.length > 0) {
-                updateUI(accounts[0]);
-            } else {
-                resetUI();
-            }
-        });
-
-        providerInstance.on("disconnect", (error) => {
-            console.log("Wallet disconnected", error);
-            resetUI();
-        });
-
-    } catch (error) {
-        console.error("Could not get a wallet connection:", error);
-    }
-}
-
-// --- UI Update Functions ---
-function updateUI(address) {
-    walletAddressDisplay.innerText = `${address.substring(0, 6)}...${address.substring(address.length - 4)}`;
-    connectSection.style.display = 'none';
-    profileSection.style.display = 'block';
-}
-
-function resetUI() {
-    walletAddressDisplay.innerText = '';
-    connectSection.style.display = 'block';
-    profileSection.style.display = 'none';
-}
-
-// --- Initialize and set event listener ---
-init();
-connectButton.addEventListener('click', connectWallet);
+        try {
+            const { createWeb3Modal, defaultConfig } = await import('https://unpkg.com/@web3modal/ethers/dist/ethers.js?v=1.1');
+            statusMessage.textContent = 'Script loaded. Initializing Web3Modal...';
+            
+            const projectId = 'bc60ecee1496cb198f70928725843489';
+            const mainnet = { chainId: 1, name: 'Ethereum', currency: 'ETH', explorerUrl: 'https://etherscan.io', rpcUrl: 'https://cloudflare-eth.com' };
+            const metadata = { name: 'TON Payment App', description: 'Web3 App', url: 'https://tonpayment.netlify.app', icons: ['https://avatars.githubusercontent.com/u/37784886'] };
+            const ethersConfig = defaultConfig({ metadata });
+            createWeb3Modal({ ethersConfig, chains: [mainnet], projectId });
+            
+            statusMessage.textContent = 'Web3Modal initialized successfully! Button should be visible.';
+            statusMessage.style.color = '#28a745';
+        } catch (error) {
+            statusMessage.textContent = 'Error initializing Web3Modal. Check project ID and domain settings in WalletConnect Cloud.';
+            statusMessage.style.color = '#dc3545';
+            console.error("Initialization Error:", error);
+        }
+    </script>
+</body>
+</html>
