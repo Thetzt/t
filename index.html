@@ -8,59 +8,16 @@
     <script type="module" src="https://unpkg.com/@web3modal/ethers/dist/ethers.js"></script>
 
     <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            background-color: #1a1b1e;
-            color: white;
-        }
-        .container {
-            width: 90%;
-            max-width: 500px;
-            text-align: center;
-        }
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1.5rem;
-            border-bottom: 1px solid #333;
-            margin-bottom: 3rem;
-        }
-        h1 {
-            font-size: 1.5rem;
-            margin: 0;
-        }
-        #profile {
-            display: none; /* Hidden by default, shown with JavaScript */
-            background-color: #2c2c34;
-            padding: 2rem;
-            border-radius: 12px;
-            box-shadow: 0 8px 16px rgba(0,0,0,0.3);
-        }
-        .profile-item {
-            margin-bottom: 1rem;
-        }
-        .profile-item strong {
-            display: block;
-            color: #aaa;
-            margin-bottom: 0.5rem;
-        }
-        .address-box {
-            font-family: monospace;
-            word-break: break-all;
-            background-color: #1a1b1e;
-            padding: 0.8rem;
-            border-radius: 8px;
-            border: 1px solid #444;
-        }
-        #welcomeMessage {
-            text-align: center;
-        }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; background-color: #1a1b1e; color: white; }
+        .container { width: 90%; max-width: 500px; text-align: center; }
+        header { display: flex; justify-content: space-between; align-items: center; padding: 1.5rem; border-bottom: 1px solid #333; margin-bottom: 3rem; }
+        h1 { font-size: 1.5rem; margin: 0; }
+        #profile { display: none; background-color: #2c2c34; padding: 2rem; border-radius: 12px; box-shadow: 0 8px 16px rgba(0,0,0,0.3); }
+        .profile-item { margin-bottom: 1rem; }
+        .profile-item strong { display: block; color: #aaa; margin-bottom: 0.5rem; }
+        .address-box { font-family: monospace; word-break: break-all; background-color: #1a1b1e; padding: 0.8rem; border-radius: 8px; border: 1px solid #444; }
+        #welcomeMessage { text-align: center; }
+        #status-message { color: #ffc107; font-family: monospace; padding: 10px; border: 1px dashed #ffc107; border-radius: 5px; margin-bottom: 2rem; }
     </style>
 </head>
 <body>
@@ -72,20 +29,13 @@
         </header>
 
         <main>
+            <p id="status-message">Loading script...</p>
+
             <div id="profile">
                 <h2>Profile Details</h2>
-                <div class="profile-item">
-                    <strong>Status</strong>
-                    <span id="connectionStatus">Disconnected</span>
-                </div>
-                <div class="profile-item">
-                    <strong>Wallet Address</strong>
-                    <div id="walletAddress" class="address-box">None</div>
-                </div>
-                <div class="profile-item">
-                    <strong>Connected Chain</strong>
-                    <span id="chainName">None</span>
-                </div>
+                <div class="profile-item"><strong>Status:</strong> <span id="connectionStatus">Disconnected</span></div>
+                <div class="profile-item"><strong>Wallet Address:</strong> <div id="walletAddress" class="address-box">None</div></div>
+                <div class="profile-item"><strong>Connected Chain:</strong> <span id="chainName">None</span></div>
             </div>
 
             <div id="welcomeMessage">
@@ -96,80 +46,55 @@
     </div>
 
     <script type="module">
-        // 1. Import the library function
-        import { createWeb3Modal, defaultConfig } from 'https://unpkg.com/@web3modal/ethers/dist/ethers.js';
-
-        // 2. Set your Project ID
-        const projectId = 'bc60ecee1496cb198f70928725843489';
-
-        // 3. Define the networks your app supports
-        const mainnet = {
-            chainId: 1,
-            name: 'Ethereum',
-            currency: 'ETH',
-            explorerUrl: 'https://etherscan.io',
-            rpcUrl: 'https://cloudflare-eth.com'
-        };
-
-        const polygon = {
-            chainId: 137,
-            name: 'Polygon',
-            currency: 'MATIC',
-            explorerUrl: 'https://polygonscan.com',
-            rpcUrl: 'https://polygon-rpc.com'
-        }
-
-        // 4. Create the modal configuration
-        const metadata = {
-            name: 'TON Payment App',
-            description: 'My awesome Web3 app',
-            url: 'https://tonpayment.netlify.app', // Your live site URL
-            icons: ['https://avatars.githubusercontent.com/u/37784886']
-        };
-
-        // THIS PART IS NOW FIXED
-        const ethersConfig = defaultConfig({
-            metadata,
-            enableEIP6963: true,
-            enableInjected: true,
-            enableCoinbase: true
-        });
-
-        const modal = createWeb3Modal({
-            ethersConfig,
-            chains: [mainnet, polygon],
-            projectId,
-            enableAnalytics: true
-        });
-
-        // 5. Logic to update the UI based on connection state
-        const profileDiv = document.getElementById('profile');
-        const welcomeDiv = document.getElementById('welcomeMessage');
-        const statusSpan = document.getElementById('connectionStatus');
-        const addressDiv = document.getElementById('walletAddress');
-        const chainSpan = document.getElementById('chainName');
+        const statusMessage = document.getElementById('status-message');
+        statusMessage.textContent = 'Script loaded. Initializing Web3Modal...';
         
-        modal.subscribeState(state => {
-            const isConnected = state.open === false && state.selectedNetworkId !== null;
+        try {
+            const { createWeb3Modal, defaultConfig } = await import('https://unpkg.com/@web3modal/ethers/dist/ethers.js');
+            const projectId = 'bc60ecee1496cb198f70928725843489';
 
-            if (isConnected) {
-                const address = modal.getAddress();
-                const chain = modal.getChainName();
+            const mainnet = { chainId: 1, name: 'Ethereum', currency: 'ETH', explorerUrl: 'https://etherscan.io', rpcUrl: 'https://cloudflare-eth.com' };
+            const polygon = { chainId: 137, name: 'Polygon', currency: 'MATIC', explorerUrl: 'https://polygonscan.com', rpcUrl: 'https://polygon-rpc.com' };
+            
+            const metadata = { name: 'TON Payment App', description: 'Web3 App', url: 'https://tonpayment.netlify.app', icons: ['https://avatars.githubusercontent.com/u/37784886'] };
+            
+            const ethersConfig = defaultConfig({ metadata, enableEIP6963: true, enableInjected: true, enableCoinbase: true });
 
-                profileDiv.style.display = 'block';
-                welcomeDiv.style.display = 'none';
-                statusSpan.textContent = 'Connected';
-                addressDiv.textContent = address;
-                chainSpan.textContent = chain;
+            const modal = createWeb3Modal({ ethersConfig, chains: [mainnet, polygon], projectId, enableAnalytics: true });
+            
+            statusMessage.textContent = 'Web3Modal initialized successfully! Button should be visible.';
+            statusMessage.style.color = '#28a745';
+            statusMessage.style.borderColor = '#28a745';
 
-            } else {
-                profileDiv.style.display = 'none';
-                welcomeDiv.style.display = 'block';
-                statusSpan.textContent = 'Disconnected';
-                addressDiv.textContent = 'None';
-                chainSpan.textContent = 'None';
-            }
-        });
+            const profileDiv = document.getElementById('profile');
+            const welcomeDiv = document.getElementById('welcomeMessage');
+            const statusSpan = document.getElementById('connectionStatus');
+            const addressDiv = document.getElementById('walletAddress');
+            const chainSpan = document.getElementById('chainName');
+            
+            modal.subscribeState(state => {
+                const isConnected = state.open === false && state.selectedNetworkId !== null;
+                if (isConnected) {
+                    profileDiv.style.display = 'block';
+                    welcomeDiv.style.display = 'none';
+                    statusSpan.textContent = 'Connected';
+                    addressDiv.textContent = modal.getAddress();
+                    chainSpan.textContent = modal.getChainName();
+                } else {
+                    profileDiv.style.display = 'none';
+                    welcomeDiv.style.display = 'block';
+                    statusSpan.textContent = 'Disconnected';
+                    addressDiv.textContent = 'None';
+                    chainSpan.textContent = 'None';
+                }
+            });
+
+        } catch (error) {
+            statusMessage.textContent = 'Error initializing Web3Modal. Check project ID and domain settings in WalletConnect Cloud.';
+            statusMessage.style.color = '#dc3545';
+            statusMessage.style.borderColor = '#dc3545';
+            console.error("Initialization Error:", error);
+        }
     </script>
 </body>
 </html>
