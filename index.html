@@ -127,19 +127,19 @@
             icons: ['https://avatars.githubusercontent.com/u/37784886']
         };
 
+        // THIS PART IS NOW FIXED
         const ethersConfig = defaultConfig({
             metadata,
             enableEIP6963: true,
             enableInjected: true,
-            enableCoinbase: true,
-            rpcUrl: 'https://mainnet.infura.io/v3/YOUR_INFURA_ID' // Optional
+            enableCoinbase: true
         });
 
         const modal = createWeb3Modal({
             ethersConfig,
             chains: [mainnet, polygon],
             projectId,
-            enableAnalytics: true // Optional
+            enableAnalytics: true
         });
 
         // 5. Logic to update the UI based on connection state
@@ -149,16 +149,13 @@
         const addressDiv = document.getElementById('walletAddress');
         const chainSpan = document.getElementById('chainName');
         
-        // Subscribe to changes in the modal's state
         modal.subscribeState(state => {
             const isConnected = state.open === false && state.selectedNetworkId !== null;
 
             if (isConnected) {
-                // Get account details
                 const address = modal.getAddress();
                 const chain = modal.getChainName();
 
-                // Update the UI
                 profileDiv.style.display = 'block';
                 welcomeDiv.style.display = 'none';
                 statusSpan.textContent = 'Connected';
@@ -166,7 +163,6 @@
                 chainSpan.textContent = chain;
 
             } else {
-                // Reset UI to disconnected state
                 profileDiv.style.display = 'none';
                 welcomeDiv.style.display = 'block';
                 statusSpan.textContent = 'Disconnected';
