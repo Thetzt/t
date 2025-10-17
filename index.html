@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TON Payment Wallet Connect</title>
     
-    <script type="module" src="https://cdn.jsdelivr.net/npm/@web3modal/ethers/dist/ethers.js?v=1.5"></script>
+    <script type="module" src="https://cdn.jsdelivr.net/npm/@web3modal/ethers/dist/ethers.js?v=1.6"></script>
 
     <style>
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; background-color: #1a1b1e; color: white; }
@@ -31,17 +31,24 @@
 
     <script type="module">
         try {
-            // Import the library from the new server
-            const { createWeb3Modal, defaultConfig } = await import('https://cdn.jsdelivr.net/npm/@web3modal/ethers/dist/ethers.js?v=1.5');
+            // Import the library from the new, unblocked server
+            const { createWeb3Modal, defaultConfig } = await import('https://cdn.jsdelivr.net/npm/@web3modal/ethers/dist/ethers.js?v=1.6');
             
+            // Your Project ID (this is correct)
             const projectId = 'bc60ecee1496cb198f70928725843489';
+
+            // Define the network
             const mainnet = { chainId: 1, name: 'Ethereum', currency: 'ETH', explorerUrl: 'https://etherscan.io', rpcUrl: 'https://cloudflare-eth.com' };
+            
+            // Your App's metadata
             const metadata = { name: 'TON Payment App', description: 'Web3 App', url: 'https://tonpayment.netlify.app', icons: ['https://avatars.githubusercontent.com/u/37784886'] };
             
+            // Create the modal
             const ethersConfig = defaultConfig({ metadata });
             createWeb3Modal({ ethersConfig, chains: [mainnet], projectId });
 
         } catch (error) {
+            // This will only run if another error occurs
             console.error("Could not initialize Web3Modal", error);
         }
     </script>
