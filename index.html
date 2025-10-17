@@ -5,19 +5,28 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TON Payment Wallet Connect</title>
     
-    <script type="module" src="https://unpkg.com/@web3modal/ethers/dist/ethers.js?v=1.1"></script>
+    <script type="module" src="https://unpkg.com/@web3modal/ethers/dist/ethers.js?v=1.4"></script>
 
     <style>
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; background-color: #1a1b1e; color: white; }
         .container { width: 90%; max-width: 500px; text-align: center; }
-        header { display: flex; justify-content: space-between; align-items: center; padding: 1.5rem; border-bottom: 1px solid #333; margin-bottom: 3rem; }
+        header { display: flex; justify-content: space-between; align-items: center; padding: 1.5rem; border-bottom: 1px solid #333; margin-bottom: 2rem; }
         h1 { font-size: 1.5rem; margin: 0; }
-        #profile { display: none; background-color: #2c2c34; padding: 2rem; border-radius: 12px; box-shadow: 0 8px 16px rgba(0,0,0,0.3); }
-        .profile-item { margin-bottom: 1rem; }
-        .profile-item strong { display: block; color: #aaa; margin-bottom: 0.5rem; }
-        .address-box { font-family: monospace; word-break: break-all; background-color: #1a1b1e; padding: 0.8rem; border-radius: 8px; border: 1px solid #444; }
-        #welcomeMessage { text-align: center; }
-        #status-message { color: #ffc107; font-family: monospace; padding: 10px; border: 1px dashed #ffc107; border-radius: 5px; margin-bottom: 2rem; }
+        main { text-align: center; }
+        /* Style for the new debug box */
+        #debug-box {
+            font-family: monospace;
+            text-align: left;
+            background-color: #2c2c34;
+            border: 1px solid #444;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            line-height: 1.5;
+        }
+        .debug-error { color: #ff6b6b; }
+        .debug-success { color: #51cf66; }
+        .debug-info { color: #fcc419; }
     </style>
 </head>
 <body>
@@ -29,33 +38,49 @@
         </header>
 
         <main>
-            <p id="status-message">Loading script...</p>
-            <div id="welcomeMessage">
-                <h2>Connect your wallet</h2>
-                <p>Please connect your wallet to see your profile information.</p>
+            <div id="debug-box">
+                <p><strong>Debug Status:</strong></p>
+                <div id="debug-log"></div>
             </div>
+
+            <h2>Connect your wallet</h2>
+            <p>Please connect your wallet to see your profile information.</p>
         </main>
     </div>
 
     <script type="module">
-        const statusMessage = document.getElementById('status-message');
+        const log = document.getElementById('debug-log');
         
+        function logMessage(message, type = 'info') {
+            log.innerHTML += `<p class="debug-${type}">- ${message}</p>`;
+        }
+
         try {
-            const { createWeb3Modal, defaultConfig } = await import('https://unpkg.com/@web3modal/ethers/dist/ethers.js?v=1.1');
-            statusMessage.textContent = 'Script loaded. Initializing Web3Modal...';
-            
+            logMessage('Script execution started.');
+
+            // STEP 1: Import the library
+            logMessage('Attempting to import Web3Modal library...');
+            const { createWeb3Modal, defaultConfig } = await import('https://unpkg.com/@web3modal/ethers/dist/ethers.js?v=1.4');
+            logMessage('Library imported successfully.', 'success');
+
+            // STEP 2: Define configuration
+            logMessage('Defining project configuration...');
             const projectId = 'bc60ecee1496cb198f70928725843489';
             const mainnet = { chainId: 1, name: 'Ethereum', currency: 'ETH', explorerUrl: 'https://etherscan.io', rpcUrl: 'https://cloudflare-eth.com' };
             const metadata = { name: 'TON Payment App', description: 'Web3 App', url: 'https://tonpayment.netlify.app', icons: ['https://avatars.githubusercontent.com/u/37784886'] };
+            logMessage('Configuration defined.', 'success');
+            
+            // STEP 3: Create the modal
+            logMessage('Attempting to create and initialize Web3Modal...');
             const ethersConfig = defaultConfig({ metadata });
             createWeb3Modal({ ethersConfig, chains: [mainnet], projectId });
-            
-            statusMessage.textContent = 'Web3Modal initialized successfully! Button should be visible.';
-            statusMessage.style.color = '#28a745';
+            logMessage('Web3Modal initialized successfully! The button should now be visible.', 'success');
+
         } catch (error) {
-            statusMessage.textContent = 'Error initializing Web3Modal. Check project ID and domain settings in WalletConnect Cloud.';
-            statusMessage.style.color = '#dc3545';
-            console.error("Initialization Error:", error);
+            // If any step fails, display the exact error message.
+            logMessage('A critical error occurred.', 'error');
+            logMessage(`Error Details: ${error.message}`, 'error');
+            console.error("Could not initialize Web3Modal", error);
         }
     </script>
 </body>
