@@ -13,7 +13,7 @@ let provider, signer;
 
 // 1️⃣ Initialize Reown
 const reown = new Reown({
-  projectId: "YOUR_PROJECT_ID", // Get from https://reown.com/
+  projectId: "7be08574a6238618945452abdd8b896a", // Get from https://reown.com/
   metadata: {
     name: "Reown Real Connect",
     description: "Simple EVM wallet connect using Reown",
