@@ -3,24 +3,31 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>EVM Real Connect Wallet</title>
-  <link rel="stylesheet" href="style.css" />
+  <title>Reown Wallet Connect Example</title>
+  <style>
+    body { font-family: sans-serif; background: #f9fafb; display: flex; align-items: center; justify-content: center; height: 100vh; }
+    .card { background: white; padding: 2rem; border-radius: 1rem; box-shadow: 0 2px 8px rgba(0,0,0,0.1); text-align: center; }
+    button { background: #2563eb; color: white; border: none; padding: 0.5rem 1rem; border-radius: 0.5rem; cursor: pointer; }
+    button:hover { background: #1e40af; }
+    #walletInfo { margin-top: 1rem; }
+  </style>
 
-  <!-- Include Ethers.js and Web3Modal UMD builds -->
+  <!-- Reown SDK -->
+  <script src="https://unpkg.com/@reown/sdk@latest/dist/index.umd.js"></script>
+  <!-- Ethers.js -->
   <script src="https://unpkg.com/ethers@6.10.0/dist/ethers.umd.min.js"></script>
-  <script src="https://unpkg.com/@web3modal/standalone@3.6.6/dist/index.umd.js"></script>
 </head>
 <body>
-  <div class="container">
-    <h1>EVM Real Connect Wallet</h1>
-    <button id="connectBtn">🔗 Connect Wallet</button>
+  <div class="card">
+    <h1>🔗 Reown Real Connect</h1>
+    <button id="connectBtn">Connect Wallet</button>
 
-    <div id="walletInfo" class="hidden">
-      <p><strong>Address:</strong> <span id="address"></span></p>
-      <p><strong>Network:</strong> <span id="network"></span></p>
-      <p><strong>Balance:</strong> <span id="balance"></span></p>
-      <button id="verifyBtn">✅ Real Connect (Sign)</button>
-      <p id="verifiedStatus"></p>
+    <div id="walletInfo" style="display:none;">
+      <p><b>Address:</b> <span id="address"></span></p>
+      <p><b>Network:</b> <span id="network"></span></p>
+      <p><b>Balance:</b> <span id="balance"></span></p>
+      <button id="verifyBtn">Sign Message (Verify)</button>
+      <p id="status"></p>
     </div>
   </div>
 
