@@ -11,20 +11,19 @@ const statusEl = document.getElementById("status");
 
 let provider, signer;
 
-// ✅ Initialize Reown SDK with your project ID
+// Initialize Reown with your real project ID
 const reown = new Reown({
-  projectId: "7be08574a6238618945452abdd8b896a",
+  projectId: "7be08574a6238618945452abdd8b896a", // ✅ your Project ID
   metadata: {
-    name: "EVM Real Connect",
-    description: "WalletConnect with Reown SDK example",
-    url: window.location.origin,
-    icons: ["https://reown.com/favicon.ico"],
+    name: "TON Payment",
+    description: "EVM Real Connect by TON Payment",
+    url: "https://tonpayment.netlify.app/",
+    icons: ["https://tonpayment.netlify.app/icon.png"],
   },
 });
 
 async function connectWallet() {
   try {
-    // 🔹 Request a wallet connection session
     const session = await reown.connect({
       chains: [1, 137, 56, 11155111], // Ethereum, Polygon, BSC, Sepolia
     });
@@ -38,43 +37,36 @@ async function connectWallet() {
     const balance = await provider.getBalance(address);
     const ethBalance = ethers.formatEther(balance);
 
-    // Update UI
     addressEl.textContent = address;
     networkEl.textContent = network.name;
     balanceEl.textContent = `${ethBalance} ETH`;
     walletInfo.style.display = "block";
     connectBtn.textContent = "Connected ✅";
-
-  } catch (error) {
-    console.error("Wallet connection failed:", error);
-    alert("Failed to connect wallet. Check console for details.");
+  } catch (err) {
+    console.error(err);
+    alert("Wallet connection failed — check console for details.");
   }
 }
 
-// 🧾 Signature verification
-async function verifyOwner() {
-  if (!signer) {
-    alert("Please connect your wallet first!");
-    return;
-  }
-
+async function verifySignature() {
+  if (!signer) return alert("Please connect wallet first!");
   const address = await signer.getAddress();
-  const message = `Verify wallet ownership for ${address}\n${new Date().toISOString()}`;
+  const message = `Verify ownership of ${address}\nTime: ${new Date().toISOString()}`;
   try {
     const signature = await signer.signMessage(message);
     const recovered = ethers.verifyMessage(message, signature);
     if (recovered.toLowerCase() === address.toLowerCase()) {
-      statusEl.textContent = "✅ Verified owner!";
+      statusEl.textContent = "✅ Verified wallet owner!";
       statusEl.style.color = "green";
     } else {
-      statusEl.textContent = "❌ Verification failed";
+      statusEl.textContent = "❌ Verification failed.";
       statusEl.style.color = "red";
     }
-  } catch (err) {
-    console.error(err);
-    statusEl.textContent = "❌ Signature canceled.";
+  } catch (e) {
+    console.error(e);
+    statusEl.textContent = "❌ Signature canceled or failed.";
   }
 }
 
 connectBtn.addEventListener("click", connectWallet);
-verifyBtn.addEventListener("click", verifyOwner);
+verifyBtn.addEventListener("click", verifySignature);
