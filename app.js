@@ -1,64 +1,72 @@
-// Using Ethers v6 and Web3Modal v3
 const { ethers } = window.ethers;
-const { Web3Modal } = window["@web3modal/standalone"];
-
-let provider, signer;
+const { Reown } = window.reown;
 
 const connectBtn = document.getElementById("connectBtn");
-const verifyBtn = document.getElementById("verifyBtn");
 const walletInfo = document.getElementById("walletInfo");
 const addressEl = document.getElementById("address");
 const networkEl = document.getElementById("network");
 const balanceEl = document.getElementById("balance");
-const verifiedStatus = document.getElementById("verifiedStatus");
+const verifyBtn = document.getElementById("verifyBtn");
+const statusEl = document.getElementById("status");
 
-// Configure Web3Modal
-const web3Modal = new Web3Modal({
-  projectId: "demo", // optional, for WalletConnect you can set a real one from walletconnect.com
-  themeMode: "light"
+let provider, signer;
+
+// 1️⃣ Initialize Reown
+const reown = new Reown({
+  projectId: "YOUR_PROJECT_ID", // Get from https://reown.com/
+  metadata: {
+    name: "Reown Real Connect",
+    description: "Simple EVM wallet connect using Reown",
+    url: window.location.origin,
+    icons: ["https://reown.com/icon.png"],
+  },
 });
 
+// 2️⃣ Connect wallet
 async function connectWallet() {
   try {
-    const instance = await web3Modal.openModal();
-    provider = new ethers.BrowserProvider(instance);
+    const session = await reown.connect();
+    const walletProvider = reown.getWalletProvider();
+    provider = new ethers.BrowserProvider(walletProvider);
     signer = await provider.getSigner();
+
     const address = await signer.getAddress();
     const network = await provider.getNetwork();
     const balance = await provider.getBalance(address);
     const ethBalance = ethers.formatEther(balance);
 
-    // Update UI
     addressEl.textContent = address;
-    networkEl.textContent = network.name || network.chainId;
+    networkEl.textContent = network.name;
     balanceEl.textContent = `${ethBalance} ETH`;
-    walletInfo.classList.remove("hidden");
+
+    walletInfo.style.display = "block";
     connectBtn.textContent = "Connected ✅";
   } catch (err) {
     console.error(err);
-    alert("Connection failed");
+    alert("Wallet connection failed");
   }
 }
 
-async function verifyOwner() {
-  if (!signer) return alert("Connect wallet first!");
-  const address = await signer.getAddress();
-  const message = `EVM Real Connect verification for ${address}\nTimestamp: ${new Date().toISOString()}`;
+// 3️⃣ Sign message to verify ownership
+async function verifySignature() {
   try {
+    const address = await signer.getAddress();
+    const message = `Verify ownership of ${address}\n${new Date().toISOString()}`;
     const signature = await signer.signMessage(message);
     const recovered = ethers.verifyMessage(message, signature);
+
     if (recovered.toLowerCase() === address.toLowerCase()) {
-      verifiedStatus.textContent = "✅ Verified — You are the wallet owner.";
-      verifiedStatus.style.color = "green";
+      statusEl.textContent = "✅ Verified owner!";
+      statusEl.style.color = "green";
     } else {
-      verifiedStatus.textContent = "❌ Verification failed.";
-      verifiedStatus.style.color = "red";
+      statusEl.textContent = "❌ Verification failed";
+      statusEl.style.color = "red";
     }
   } catch (err) {
     console.error(err);
-    verifiedStatus.textContent = "❌ Signature canceled or failed.";
+    statusEl.textContent = "❌ Signature canceled";
   }
 }
 
-connectBtn.addEventListener("click", connectWallet);
-verifyBtn.addEventListener("click", verifyOwner);
+connectBtn.onclick = connectWallet;
+verifyBtn.onclick = verifySignature;
