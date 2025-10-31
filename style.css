@@ -1,32 +1,126 @@
-body {
-  font-family: system-ui, sans-serif;
-  background: #f9fafb;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 100vh;
+.mother{
+margin-left:40px;
+margin-right:40px;
 }
-.card {
-  background: white;
-  padding: 2rem;
-  border-radius: 1rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  text-align: center;
-  width: 360px;
+
+
+
+
+
+.menu {
+  background-color:White;
+ margin-bottom:50px;
+  
 }
-button {
-  background: #2563eb;
-  color: white;
-  border: none;
-  padding: 0.6rem 1.2rem;
-  border-radius: 0.5rem;
-  cursor: pointer;
-  font-size: 1rem;
+
+
+.container {
+ 
 }
-button:hover {
-  background: #1e40af;
+
+.left {
+  display:inline-block;
+  width:40%;
 }
-p {
-  margin: 0.3rem 0;
-  font-size: 0.9rem;
+
+.h1 {
+  display:inline-block
 }
+
+.header{
+  
+  margin-bottom:20px
+  
+}
+.descraption{
+  margin-bottom:20px
+}
+
+.appstore {
+  width:30%;
+  border-radius:15px;
+  outline:none;
+  
+}
+
+
+
+
+.right 	{
+  display:inline-block;
+  width:40%;
+  background-color:White;
+}
+
+.rightimg {
+ 
+  width:130%;
+}
+
+
+
+.footer {
+  text-align:center;
+  font-size:40px;
+  font-style:bold;
+  padding:50px;
+  margin-top:150px
+  
+}
+
+
+.logo {
+  width:30px;
+  height:30px;
+  margin-right:400px;
+  
+  }
+  
+  .menuItem {
+	text-decoration:none;
+	color:inherit;
+	margin-left:30px;
+	font-size:16px;
+    te
+  }
+  
+  .menuItem:hover{
+	
+	text-decoration:underline;
+  }
+  
+  .blockElement {
+	display:block;
+	margin-top:10px;
+	margin-bottom:10px;
+	border:none;
+	background-color:LightGray;
+	height:35px;
+	width:200px;
+	border-radius:15px;
+	outline:none;
+	padding-left:15px;
+	padding-right:15px;
+	font-size:15px;
+  }
+  
+  .myanmar {
+	background-color:#0084ff;
+	border-radius:24px;
+	border:none;
+	color:White;
+	padding:2px 20px 0px;
+	font-size:19px;
+	height:40px;
+	width:100px;
+	
+  }
+  
+ .input{
+   
+  margin-bottom:20px;
+ }
+ 
+ .forgot{
+   margin-bottom:15px;
+ }
